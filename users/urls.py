@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path
-from .views import LoginView,RegisterView,GroupPaymentListView,Home,LogautView,CreateGroupView
+from .views import LoginView,RegisterView,GroupPaymentListView,Home,LogautView,CreateGroupView,TeacherView
 from .student import CreateStudentView,StudentListView,UpdateStudentView,DeleteStudentView
 
 urlpatterns = [
@@ -15,4 +15,5 @@ urlpatterns = [
     path('update/<int:pk>/', UpdateStudentView.as_view(), name='update_student'),
     path('delete/<int:pk>/', DeleteStudentView.as_view(), name='delete_student'),
     path('create/', CreateGroupView.as_view(), name='create_group'),
+    path('teacher/', TeacherView.as_view(), name='teacher'),
 ]

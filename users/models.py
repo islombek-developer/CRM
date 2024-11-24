@@ -53,6 +53,10 @@ class Group(models.Model):
         return self.students.count()
 
     @property
+    def group_count(self):
+        return self.groups.count()
+
+    @property
     def total_payment_status(self):
         """Guruhdagi o‘quvchilarning umumiy oylik to‘lovlarini hisoblaydi."""
         total = 0
@@ -248,7 +252,19 @@ class DailyPayment(models.Model):
             payment = student.monthlypayments.aggregate(total=Sum('oylik'))['total'] or 0
             total += payment - (200000/30)  # To‘lov yetishmasa minus bo‘ladi
         return total
-
+    @classmethod
+    def get_total_payments_across_all_groups(cls):
+        """Hamma guruhdagi o‘quvchilarning jami to‘lovlarini hisoblaydi."""
+        total_paid = 0
+        
+        # Loop over all groups
+        for group in Group.objects.all():  
+            # Loop over all students in the current group
+            for student in group.students.all():
+                # Sum the paid_amount for each student's DailyPayment records
+                total_paid += student.daily_payments.aggregate(total=Sum('paid_amount'))['total'] or 0
+        
+        return total_paid
 # Signals
 @receiver(post_save, sender=Group)
 def create_initial_days(sender, instance, created, **kwargs):

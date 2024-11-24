@@ -29,7 +29,7 @@
               <div class="col col-stats ms-3 ms-sm-0">
                 <div class="numbers">
                   <p class="card-category">Guruhlar soni</p>
-                  <h4 class="card-title">1,294</h4>
+                  <h4 class="card-title">{{group_count}}</h4>
                 </div>
               </div>
             </div>
@@ -70,8 +70,8 @@
               </div>
               <div class="col col-stats ms-3 ms-sm-0">
                 <div class="numbers">
-                  <p class="card-category">O'quvmarkaz daromadi</p>
-                  <h4 class="card-title">$ 1,345</h4>
+                  <p class="card-category">Summa</p>
+                  <h4 class="card-title">{{total_payments}}</h4>
                 </div>
               </div>
             </div>
@@ -91,8 +91,8 @@
               </div>
               <div class="col col-stats ms-3 ms-sm-0">
                 <div class="numbers">
-                  <p class="card-category">Order</p>
-                  <h4 class="card-title">576</h4>
+                  <p class="card-category">Bitirgan</p>
+                  <h4 class="card-title">0</h4>
                 </div>
               </div>
             </div>
@@ -137,7 +137,7 @@
         <div class="card card-primary card-round">
           <div class="card-header">
             <div class="card-head-row">
-              <div class="card-title">Daily Sales</div>
+              <div class="card-title">Markaz daromadi</div>
               <div class="card-tools">
                 <div class="dropdown">
                   <button
@@ -163,27 +163,19 @@
                 </div>
               </div>
             </div>
-            <div class="card-category">March 25 - April 02</div>
+            <div class="card-category">{{ date_range }}</div>
+
           </div>
           <div class="card-body pb-0">
             <div class="mb-4 mt-2">
-              <h1>$4,578.58</h1>
+              <h1>{{total_payments}}</h1>
             </div>
             <div class="pull-in">
               <canvas id="dailySalesChart"></canvas>
             </div>
           </div>
         </div>
-        <div class="card card-round">
-          <div class="card-body pb-0">
-            <div class="h1 fw-bold float-end text-primary">+5%</div>
-            <h2 class="mb-2">17</h2>
-            <p class="text-muted">Users online</p>
-            <div class="pull-in sparkline-fix">
-              <div id="lineChart"></div>
-            </div>
-          </div>
-        </div>
+     
       </div>
     </div>
  

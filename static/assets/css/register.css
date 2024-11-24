@@ -1,0 +1,88 @@
+.register-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Sarlavha stili */
+.register-container h2 {
+    text-align: center;
+    color: #333;
+    font-size: 28px;
+    margin-bottom: 30px;
+    font-weight: 600;
+}
+
+/* Form elementlari uchun umumiy stillar */
+.register-container form {
+    display: flex;
+    flex-direction: column;
+   
+}
+
+/* Label stili */
+.register-container label {
+    display: block;
+    margin-bottom: 5px;
+    color: #555;
+    font-weight: 500;
+}
+
+/* Input maydonlari stili */
+.register-container input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+}
+
+.register-container input:focus {
+    outline: none;
+    border-color: #4a90e2;
+    box-shadow: 0 0 5px rgba(74, 144, 226, 0.3);
+}
+
+
+.register-container .errorlist {
+    color: #dc3545;
+    font-size: 14px;
+    margin-top: 5px;
+    list-style: none;
+    padding: 0;
+}
+
+.btn-primary {
+    background-color: #4a90e2;
+    color: white;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: aqua;
+}
+
+@media (max-width: 600px) {
+    .register-container {
+        padding: 20px;
+        margin: 10px;
+    }
+    
+    .register-container h2 {
+        font-size: 24px;
+    }
+    
+    .btn-primary {
+        padding: 12px 16px;
+    }
+}

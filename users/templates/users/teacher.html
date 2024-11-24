@@ -6,15 +6,8 @@
     <div class="card">
       <div class="card-header">
         <div class="d-flex align-items-center">
-          <h4 class="card-title">Student yaratish</h4>
-          <button
-            class="btn btn-primary btn-round ms-auto"
-            data-bs-toggle="modal"
-            data-bs-target="#addRowModal"
-          >
-            <i class="fa fa-plus"></i>
-            Student 
-          </button>
+          <h4 class="card-title">O'qtuvchilar</h4>
+       
         </div>
       </div>
       <div class="card-body">
@@ -26,19 +19,17 @@
           >
             <thead>
               <tr>
-                <th>Ismi</th>
-                <th>Familyasi</th>
+                <th>Full name</th>
                 <th>Telefon raqami</th>
                 <th style="width: 10%">Tahrirlash</th>
               </tr>
             </thead>
            
             <tbody>
-              {% for group in students %}
+              {% for group in teacher %}
                 <tr>
-                  <td>{{group.first_name}}</a></td>
-                  <td>{{ group.last_name }}</td>
-                  <td>{{ group.phone }}</td>
+                  <td>{{group.user.first_name}} {{ group.user.last_name }}</td>
+                  <td>{{ group.user.phone_number }}</td>
                   <td>
                     <div class="form-button-action">
                       <button

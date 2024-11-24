@@ -39,7 +39,7 @@
               {% for group in groups %}
                 <tr>
                   <td><a href="{% url 'student_list' group.id %}">{{ group.name }}</a></td>
-                  <td>{{ group.user.username }}</td>
+                  <td>{{ group.teacher }}</td>
                   <td>{{ group.monthly_payment }}</td>
                   <td>{{ group.week_days }}</td>
                   <td>
@@ -60,7 +60,7 @@
                         class="btn btn-link btn-danger"
                         data-original-title="Remove"
                       >
-                        <i class="fa fa-times"></i>
+                      <i class="fas fa-trash-alt"></i>
                       </button>
                     </div>
                   </td>
