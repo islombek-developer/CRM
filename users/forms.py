@@ -1,6 +1,11 @@
 from django import forms
 from .models import Student,User,Teacher,Group,Day,Month,DailyPayment,Attendance
 
+class GroupForm(forms.ModelForm):
+    class Meta:
+        model = Group
+        fields = ['name','teacher', 'monthly_payment']
+
 class StudentForm(forms.ModelForm):
     class Meta:
         model = Student

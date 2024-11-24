@@ -4,25 +4,37 @@ from django.shortcuts import render, redirect,get_object_or_404
 from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Sum
-from django.views.generic import UpdateView
-from .forms import LoginForm, RegisterForm
+from django.views.generic import UpdateView,CreateView
+from .forms import LoginForm, RegisterForm,GroupForm
 from .permissionmixin import AdminRequiredMixin,TeacherRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView
 from django.contrib import messages
 from .models import DailyPayment, Student, Group
 from datetime import timezone
+from django.urls import reverse_lazy
+
+class CreateGroupView(LoginRequiredMixin, CreateView):
+    model = Group
+    form_class = GroupForm
+    template_name = 'users/group_form.html'
+    success_url = reverse_lazy('group-list') 
+
+    def form_valid(self, form):
+        return super().form_valid(form)
 
 
 class GroupPaymentListView(LoginRequiredMixin, ListView):
     model = Group
-    template_name = 'payments/group_list.html'
+    template_name = 'users/group_list.html'
     context_object_name = 'groups'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        for group in context['groups']:
-            group.total_remaining = DailyPayment.get_group_total_remaining(group.id)
+        group_id = self.kwargs.get('group_id')  # or get group from the URL kwargs
+        group = get_object_or_404(Group, id=group_id)
+        context['students_count'] = Student.objects.filter(group=group).count()
+        context['group'] = group  # Optionally add group details to context
         return context
 
 class StudentPaymentListView(LoginRequiredMixin, ListView):
@@ -131,17 +143,22 @@ def group_payment_report(request, group_id):
     
     return render(request, 'payments/group_report.html', context)
 
-def home(request):
-    return render(request, 'index.html')
+class Home(View, LoginRequiredMixin):
+    def get(self, request):
+        student_count = Student.objects.count()  
+        context = {
+            'student_count': student_count, 
+        }
+        return render(request, 'users/dashboard.html', context)
+class LogautView(View):
+    def get(self,request):
+        logout(request)
+        return redirect("/")
 
-
-
-class LoginView(View,LoginRequiredMixin):
+class LoginView(View):
     def get(self, request):
         if request.user.is_authenticated: 
-            if request.user.user_role == 'student':
-                return redirect('students/dashboard')
-            elif request.user.user_role == 'teacher':
+            if request.user.user_role == 'teacher':
                 return redirect('teachers/dashboard')
             elif request.user.user_role == 'admin':
                 return redirect('/dashboard')

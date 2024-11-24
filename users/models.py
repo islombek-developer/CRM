@@ -28,16 +28,51 @@ class Teacher(models.Model):
 
 
 class WeekDayChoices(models.TextChoices):
-    EVEN = 'even', 'Juft kunlar'
-    ODD = 'odd', 'Toq kunlar'
-    MON_WED_FRI = 'mon_wed_fri', 'Dushanba/Chorshanba/Juma'
-    TUE_THU_SAT = 'tue_thu_sat', 'Seshanba/Payshanba/Shanba'
+    MON_WED_FRI = 'toq_kunlari', 'Dushanba/Chorshanba/Juma'
+    TUE_THU_SAT = 'juft_kunlari', 'Seshanba/Payshanba/Shanba'
+
+
+class Group(models.Model):
+    name = models.CharField(max_length=100)
+    teacher = models.ForeignKey(Teacher, on_delete=models.SET_NULL, null=True, blank=True)
+    week_days = models.CharField(
+        max_length=20,
+        choices=WeekDayChoices.choices,
+        default=WeekDayChoices.MON_WED_FRI
+    )
+    monthly_payment = models.IntegerField(default=200000)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return self.name
+
+    @property
+    def student_count(self):
+        """Guruhdagi o‘quvchilar sonini hisoblaydi."""
+        return self.students.count()
+
+    @property
+    def total_payment_status(self):
+        """Guruhdagi o‘quvchilarning umumiy oylik to‘lovlarini hisoblaydi."""
+        total = 0
+        for student in self.students.all():
+            # Talabaning jami oylik to‘lovini olamiz
+            payment = student.monthlypayments.aggregate(total=Sum('oylik'))['total'] or 0
+            total += payment - (200000/30)  # To‘lov yetishmasa minus bo‘ladi
+        return total
+
+
+
+    @property
+    def total_remaining(self):
+        return DailyPayment.get_group_total_remaining(self.id)
 
 class Student(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     phone = models.CharField(max_length=15)
-    group = models.ForeignKey('Group', on_delete=models.SET_NULL, null=True, blank=True, related_name='students')
+    group = models.ForeignKey(Group, on_delete=models.SET_NULL, null=True, blank=True, related_name='students')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -67,41 +102,6 @@ class Student(models.Model):
         
         return latest_payment.remaining_amount if latest_payment else 200000
 
-class Group(models.Model):
-    name = models.CharField(max_length=100)
-    teacher = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-    week_days = models.CharField(
-        max_length=20,
-        choices=WeekDayChoices.choices,
-        default=WeekDayChoices.EVEN
-    )
-    monthly_payment = models.IntegerField(default=200000)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    
-    def __str__(self):
-        return self.name
-
-    @property
-    def student_count(self):
-        """Guruhdagi o‘quvchilar sonini hisoblaydi."""
-        return self.students.count()
-
-    @property
-    def total_payment_status(self):
-        """Guruhdagi o‘quvchilarning umumiy oylik to‘lovlarini hisoblaydi."""
-        total = 0
-        for student in self.students.all():
-            # Talabaning jami oylik to‘lovini olamiz
-            payment = student.monthlypayments.aggregate(total=Sum('oylik'))['total'] or 0
-            total += payment - (200000/30)  # To‘lov yetishmasa minus bo‘ladi
-        return total
-
-
-
-    @property
-    def total_remaining(self):
-        return DailyPayment.get_group_total_remaining(self.id)
 
 class Day(models.Model):
     group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='days')
@@ -145,11 +145,8 @@ class Day(models.Model):
             # Guruhning dars kunlarini tekshirish
             should_create = False
             
-            if group.week_days == WeekDayChoices.EVEN and current_date.day % 2 == 0:
-                should_create = True
-            elif group.week_days == WeekDayChoices.ODD and current_date.day % 2 != 0:
-                should_create = True
-            elif group.week_days == WeekDayChoices.MON_WED_FRI and current_date.weekday() in [0, 2, 4]:
+          
+            if group.week_days == WeekDayChoices.MON_WED_FRI and current_date.weekday() in [0, 2, 4]:
                 should_create = True
             elif group.week_days == WeekDayChoices.TUE_THU_SAT and current_date.weekday() in [1, 3, 5]:
                 should_create = True

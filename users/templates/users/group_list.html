@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-10">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <div class="d-flex align-items-center">
+          <h4 class="card-title">Guruh yaratish</h4>
+          <a
+            class="btn btn-primary btn-round ms-auto"
+     
+            href="{% url 'create_group' %}"
+          >
+          <i class="fa fa-plus"></i> Guruh
+           
+        </a>
+        </div>
+      </div>
+      
+       
+
+        <div class="table-responsive">
+          <table
+            id="add-row"
+            class="display table table-striped table-hover"
+          >
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Teacher</th>
+                <th>Payments</th>
+                <th>kunlari</th>
+                <th style="width: 10%">monthly_payment</th>
+              </tr>
+            </thead>
+           
+            <tbody>
+              {% for group in groups %}
+                <tr>
+                  <td><a href="{% url 'student_list' group.id %}">{{ group.name }}</a></td>
+                  <td>{{ group.user.username }}</td>
+                  <td>{{ group.monthly_payment }}</td>
+                  <td>{{ group.week_days }}</td>
+                  <td>
+                    <div class="form-button-action">
+                      <button
+                        type="button"
+                        data-bs-toggle="tooltip"
+                        title=""
+                        class="btn btn-link btn-primary btn-lg"
+                        data-original-title="Edit Task"
+                      >
+                        <i class="fa fa-edit"></i>
+                      </button>
+                      <button
+                        type="button"
+                        data-bs-toggle="tooltip"
+                        title=""
+                        class="btn btn-link btn-danger"
+                        data-original-title="Remove"
+                      >
+                        <i class="fa fa-times"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="5">No groups available.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+            
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}
