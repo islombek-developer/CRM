@@ -15,7 +15,8 @@ from datetime import timedelta
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
+LOGIN_URL = 'login'  # URL для перенаправления неавторизованных пользователей
+LOGIN_REDIRECT_URL = 'home' 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
@@ -40,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'users',
     'teachers',
+    'django_session_timeout',
 ]
 
 MIDDLEWARE = [
@@ -50,7 +52,13 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_session_timeout.middleware.SessionTimeoutMiddleware'
 ]
+SESSION_COOKIE_AGE = 3600
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False 
+SESSION_EXPIRE_SECONDS = 3600 
+SESSION_TIMEOUT_REDIRECT = '/'
 
 ROOT_URLCONF = 'config.urls'
 

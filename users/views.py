@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect,get_object_or_404
 from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Sum
-from django.views.generic import UpdateView,CreateView
+from django.views.generic import UpdateView,CreateView,DeleteView
 from .forms import LoginForm, RegisterForm,GroupForm
 from .permissionmixin import AdminRequiredMixin,TeacherRequiredMixin
 from django.contrib.auth.decorators import login_required
@@ -14,14 +14,33 @@ from .models import DailyPayment, Student, Group
 from datetime import timezone,datetime, timedelta
 from django.urls import reverse_lazy
 
-class CreateGroupView(LoginRequiredMixin, CreateView):
+class GroupCreateView(LoginRequiredMixin, CreateView):
     model = Group
     form_class = GroupForm
-    template_name = 'users/group_form.html'
-    success_url = reverse_lazy('group-list') 
+    template_name = 'users/group_list.html'
+    success_url = reverse_lazy('group_list')
 
     def form_valid(self, form):
+        messages.success(self.request, "Guruh muvaffaqiyatli yaratildi!")
         return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['groups'] = Group.objects.all()
+        context['teachers'] = Teacher.objects.all()  
+        return context
+
+class GroupDeleteView(LoginRequiredMixin, DeleteView):
+    model = Group
+    template_name = 'users/group_confirm_delete.html'  
+    success_url = reverse_lazy('group_list')  
+
+    def delete(self, request, *args, **kwargs):
+        group = self.get_object()
+        messages.success(self.request, f"Guruh '{group.name}' muvaffaqiyatli o'chirildi!")
+        return super().delete(request, *args, **kwargs)
+
+
 
 
 class GroupPaymentListView(LoginRequiredMixin, ListView):
@@ -226,3 +245,4 @@ class TeacherView(LoginRequiredMixin,View):
     def get(self,request):
         teacher=Teacher.objects.all()
         return render(request,'users/teacher.html',{'teacher':teacher})
+    

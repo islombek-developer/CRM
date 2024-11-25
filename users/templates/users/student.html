@@ -18,12 +18,8 @@
         </div>
       </div>
       <div class="card-body">
-
         <div class="table-responsive">
-          <table
-            id="add-row"
-            class="display table table-striped table-hover"
-          >
+          <table id="add-row" class="display table table-striped table-hover">
             <thead>
               <tr>
                 <th>Ismi</th>
@@ -32,43 +28,50 @@
                 <th style="width: 10%">Tahrirlash</th>
               </tr>
             </thead>
-           
             <tbody>
-              {% for group in students %}
+              {% for student in students %}
                 <tr>
-                  <td>{{group.first_name}}</a></td>
-                  <td>{{ group.last_name }}</td>
-                  <td>{{ group.phone }}</td>
+                  <td>{{ student.first_name }}</td>
+                  <td>{{ student.last_name }}</td>
+                  <td>{{ student.phone }}</td>
                   <td>
                     <div class="form-button-action">
+                      <!-- Edit Button -->
                       <button
                         type="button"
-                        data-bs-toggle="tooltip"
-                        title=""
                         class="btn btn-link btn-primary btn-lg"
-                        data-original-title="Edit Task"
+                        data-bs-toggle="modal"
+                        data-bs-target="#editStudentModal"
+                        data-id="{{ student.id }}"
+                        data-first-name="{{ student.first_name }}"
+                        data-last-name="{{ student.last_name }}"
+                        data-phone="{{ student.phone }}"
                       >
                         <i class="fa fa-edit"></i>
                       </button>
+                      <!-- Delete Button -->
                       <button
                         type="button"
-                        data-bs-toggle="tooltip"
-                        title=""
-                        class="btn btn-link btn-danger"
-                        data-original-title="Remove"
+                        class="btn btn-link btn-danger delete-student"
+                        data-id="{{ student.id }}"
+                        data-name="{{ student.first_name }} {{ student.last_name }}"
                       >
-                      <i class="fas fa-trash-alt"></i>
                       </button>
+                      <form method="post" action="{% url 'delete_student' student.id %}" style="display:inline-block;">
+                        {% csrf_token %}
+                        <a href="{% url 'delete_student' student.id %}" class="btn btn-link btn-danger">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+                    </form>
                     </div>
                   </td>
                 </tr>
               {% empty %}
                 <tr>
-                  <td colspan="5">No groups available.</td>
+                  <td colspan="4">Hozircha studentlar yo'q</td>
                 </tr>
               {% endfor %}
             </tbody>
-            
           </table>
         </div>
       </div>
@@ -76,4 +79,146 @@
   </div>
 </div>
 
-{% endblock content %}
+<!-- Add Student Modal -->
+<div class="modal fade" id="addRowModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header no-bd">
+        <h5 class="modal-title">Yangi Student</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="post" action="{% url 'student_create' %}">
+        {% csrf_token %}
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group form-group-default">
+                        <label>Ism</label>
+                        <input type="text" 
+                               class="form-control" 
+                               name="first_name" 
+                               required
+                               placeholder="ism kiriting">
+                    </div>
+                </div>
+                <div class="col-sm-12">
+                    <div class="form-group form-group-default">
+                        <label>Familiya</label>
+                        <input type="text" 
+                               class="form-control" 
+                               name="last_name" 
+                               required
+                               placeholder="Famiyani kiriting">
+                    </div>
+                </div>
+                <div class="col-sm-12">
+                    <div class="form-group form-group-default">
+                        <label>Telefon</label>
+                        <input type="tel" 
+                               class="form-control" 
+                               name="phone" 
+                               required
+                               value="+998">
+                               
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer no-bd">
+            <button type="submit" class="btn btn-primary">Qo'shish</button>
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Bekor qilish</button>
+        </div>
+    </form>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Student Modal -->
+<div class="modal fade" id="editStudentModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header no-bd">
+        <h5 class="modal-title">Studentni Tahrirlash</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="post" id="edit-student-form">
+        {% csrf_token %}
+        <div class="modal-body">
+          <div class="row">
+            <!-- Form Fields -->
+            <input type="hidden" name="student_id" id="edit-student-id">
+            <div class="col-sm-12">
+              <div class="form-group form-group-default">
+                <label>Ism</label>
+                <input type="text" class="form-control" name="first_name" id="edit-first-name" required>
+              </div>
+            </div>
+            <div class="col-sm-12">
+              <div class="form-group form-group-default">
+                <label>Familiya</label>
+                <input type="text" class="form-control" name="last_name" id="edit-last-name" required>
+              </div>
+            </div>
+            <div class="col-sm-12">
+              <div class="form-group form-group-default">
+                <label>Telefon</label>
+                <input type="tel" class="form-control" name="phone" id="edit-phone" required>
+              </div>
+            </div>
+            <div class="col-sm-12">
+              <div class="form-group form-group-default">
+                <label>Group</label>
+                <select class="form-control" name="group" id="edit-group" required>
+                    <option value="" disabled>Guruhni tanlang</option>
+                    {% for group in groups %}
+                        <option value="{{ group.id }}" {% if group.id == form.group.value %}selected{% endif %}>
+                            {{ group.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+                       
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer no-bd">
+          <button type="submit" class="btn btn-primary">Saqlash</button>
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Bekor qilish</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Populate Edit Modal with Data
+  document.querySelectorAll('[data-bs-target="#editStudentModal"]').forEach(button => {
+    button.addEventListener('click', function () {
+      const studentId = this.getAttribute('data-id');
+      const firstName = this.getAttribute('data-first-name');
+      const lastName = this.getAttribute('data-last-name');
+      const phone = this.getAttribute('data-phone');
+
+      document.getElementById('edit-student-id').value = studentId;
+      document.getElementById('edit-first-name').value = firstName;
+      document.getElementById('edit-last-name').value = lastName;
+      document.getElementById('edit-phone').value = phone;
+    });
+  });
+
+  // Confirm Delete Action
+  document.querySelectorAll('.delete-student').forEach(button => {
+    button.addEventListener('click', function () {
+      const studentId = this.getAttribute('data-id');
+      const studentName = this.getAttribute('data-name');
+      if (confirm(`Haqiqatan ham ${studentName} ni o'chirishni istaysizmi?`)) {
+        // Redirect to delete view or make an AJAX call
+        window.location.href = `/students/delete/${studentId}/`;
+      }
+    });
+  });
+</script>
+{% endblock %}

@@ -77,7 +77,7 @@
               <li class="nav-item active">
               
                   
-                  <a href="{% url 'dashboard' %}"><i class="fas fa-home"></i> Dashboard</a>
+                  <a href="{% url 'dashboard' %}"><i class="fas fa-home"></i> Asosiy sahifa</a>
            
                
               </li>
@@ -89,107 +89,40 @@
               </li>
               <li class="nav-item">
 
-                  <a href=" {% url 'group_payment'  %}"><i class="fas fa-layer-group"></i>Group</a>
+                  <a href=" {% url 'group_payment'  %}"><i class="fas fa-layer-group"></i>Guruhlar</a>
             
               
               </li>
-              <li class="nav-item">
-       
-                  <a href="{% url 'register' %}"><i class="fas fa-th-list"></i> Register</a>
-             
-              
-              </li>
+
               <li class="nav-item">
                   
                   <a href="{% url 'teacher' %}"><i class="fas fa-pen-square"></i> O'qtuvchilar</a>
                  
-                <div class="collapse" id="forms">
-                  <ul class="nav nav-collapse">
-                    <li>
-                      <a href="forms/forms.html">
-                        <span class="sub-item">Basic Form</span>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
+        
               </li>
               <li class="nav-item">
-                <a data-bs-toggle="collapse" href="#tables">
-                  <i class="fas fa-table"></i>
-                  <p>Tables</p>
-                  <span class="caret"></span>
-                </a>
-                <div class="collapse" id="tables">
-                  <ul class="nav nav-collapse">
-                    <li>
-                      <a href="tables/tables.html">
-                        <span class="sub-item">Basic Table</span>
-                      </a>
-                    </li>
-                    <li>
-                      <a href="tables/datatables.html">
-                        <span class="sub-item">Datatables</span>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
+                 
+                  <a href=""> <i class="fas fa-table"></i> Davomat</a>
+           
               </li>
               <li class="nav-item">
-                <a data-bs-toggle="collapse" href="#maps">
-                  <i class="fas fa-map-marker-alt"></i>
-                  <p>Maps</p>
-                  <span class="caret"></span>
-                </a>
-                <div class="collapse" id="maps">
-                  <ul class="nav nav-collapse">
-                    <li>
-                      <a href="maps/googlemaps.html">
-                        <span class="sub-item">Google Maps</span>
-                      </a>
-                    </li>
-                    <li>
-                      <a href="maps/jsvectormap.html">
-                        <span class="sub-item">Jsvectormap</span>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
+                  
+                  <a href=""><i class="fas fa-map-marker-alt"></i> Profil</a>
+        
               </li>
               <li class="nav-item">
-                <a data-bs-toggle="collapse" href="#charts">
-                  <i class="far fa-chart-bar"></i>
-                  <p>Charts</p>
-                  <span class="caret"></span>
-                </a>
-                <div class="collapse" id="charts">
-                  <ul class="nav nav-collapse">
-                    <li>
-                      <a href="charts/charts.html">
-                        <span class="sub-item">Chart Js</span>
-                      </a>
-                    </li>
-                    <li>
-                      <a href="charts/sparkline.html">
-                        <span class="sub-item">Sparkline</span>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
+                  
+                  <a href=""><i class="far fa-chart-bar"></i> To'lovLar</a>
+               
               </li>
               <li class="nav-item">
-                <a href="widgets.html">
-                  <i class="fas fa-desktop"></i>
-                  <p>Widgets</p>
-                  <span class="badge badge-success">4</span>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="../../documentation/index.html">
-                  <i class="fas fa-file"></i>
-                  <p>Documentation</p>
-                  <span class="badge badge-secondary">1</span>
-                </a>
-              </li>
+       
+                <a href="{% url 'register' %}"><i class="fas fa-th-list"></i> Registratsiya</a>
+           
+            
+            </li>
+             
+            
               <li class="nav-item">
                 <a data-bs-toggle="collapse" href="#submenu">
                   <i class="fas fa-bars"></i>
@@ -334,7 +267,7 @@
                     aria-expanded="false"
                   >
                     <i class="fa fa-bell"></i>
-                    <span class="notification">4</span>
+                    <span class="notification">2</span>
                   </a>
                   <ul
                     class="dropdown-menu notif-box animated fadeIn"
@@ -368,29 +301,8 @@
                               <span class="time">12 minutes ago</span>
                             </div>
                           </a>
-                          <a href="#">
-                            <div class="notif-img">
-                              <img
-                                src="{% static 'assets/img/profile2.jpg' %}"
-                                alt="Img Profile"
-                              />
-                            </div>
-                            <div class="notif-content">
-                              <span class="block">
-                                Reza send messages to you
-                              </span>
-                              <span class="time">12 minutes ago</span>
-                            </div>
-                          </a>
-                          <a href="#">
-                            <div class="notif-icon notif-danger">
-                              <i class="fa fa-heart"></i>
-                            </div>
-                            <div class="notif-content">
-                              <span class="block"> Farrah liked Admin </span>
-                              <span class="time">17 minutes ago</span>
-                            </div>
-                          </a>
+                        
+                       
                         </div>
                       </div>
                     </li>
@@ -423,7 +335,7 @@
                               <div class="avatar-item bg-danger rounded-circle">
                                 <i class="far fa-calendar-alt"></i>
                               </div>
-                              <span class="text">Calendar</span>
+                              <span class="text">Kalendar</span>
                             </div>
                           </a>
                           <a class="col-6 col-md-4 p-0" href="{% url 'group_payment' %}">
@@ -441,7 +353,7 @@
                               <div class="avatar-item bg-info rounded-circle">
                                 <i class="fas fa-file-excel"></i>
                               </div>
-                              <span class="text">Reports</span>
+                              <span class="text">Davomat</span>
                             </div>
                           </a>
                           <a class="col-6 col-md-4 p-0" href="#">
@@ -471,7 +383,7 @@
                               >
                                 <i class="fas fa-credit-card"></i>
                               </div>
-                              <span class="text">Payments</span>
+                              <span class="text">To'lovlar</span>
                             </div>
                           </a>
                         </div>
@@ -514,16 +426,14 @@
                             <a
                               href="profile.html"
                               class="btn btn-xs btn-secondary btn-sm"
-                              >View Profile</a
+                              >Profile</a
                             >
                           </div>
                         </div>
                       </li>
                       <li>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">My Profile</a>
-                        <a class="dropdown-item" href="#">My Balance</a>
-                        <a class="dropdown-item" href="#">Inbox</a>
+                        <a class="dropdown-item" href="#">Mening oyligim</a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="#">Account Setting</a>
                         <div class="dropdown-divider"></div>

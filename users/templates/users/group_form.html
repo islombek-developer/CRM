@@ -1,10 +1,35 @@
+
+{# templates/users/group_form.html #}
 {% extends 'base.html' %}
 
 {% block content %}
-  <h2>Create New Group</h2>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">saqlash</button>
-  </form>
-{% endblock %}
+<div class="container mt-10">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <h4 class="card-title">{% if object %}Guruhni tahrirlash{% else %}Yangi guruh yaratish{% endif %}</h4>
+      </div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          {% for field in form %}
+            <div class="form-group">
+              <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+              {{ field }}
+              {% if field.errors %}
+                <div class="text-danger">
+                  {{ field.errors }}
+                </div>
+              {% endif %}
+            </div>
+          {% endfor %}
+          <div class="card-action">
+            <button type="submit" class="btn btn-primary">Saqlash</button>
+            <a href="{% url 'group_list' %}" class="btn btn-danger">Bekor qilish</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

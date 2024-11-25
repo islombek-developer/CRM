@@ -4,13 +4,56 @@ from .models import Student,User,Teacher,Group,Day,Month,DailyPayment,Attendance
 class GroupForm(forms.ModelForm):
     class Meta:
         model = Group
-        fields = ['name','teacher', 'monthly_payment']
+        fields = ['name', 'teacher', 'monthly_payment', 'week_days']
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Guruh nomini kiriting',
+            }),
+            'teacher': forms.Select(attrs={
+                'class': 'form-control',
+                'placeholder': 'O\'qituvchini tanlang',
+            }),
+            'monthly_payment': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Oylik to\'lovni kiriting',
+            }),
+          
+        }
+
+
 
 class StudentForm(forms.ModelForm):
     class Meta:
         model = Student
-        fields = '__all__'
+        fields = ['first_name', 'last_name', 'phone']
+        widgets = {
+            'group': forms.HiddenInput()
+        }
 
+    def clean_phone(self):
+        phone = self.cleaned_data.get('phone')
+        if phone:
+            phone = ''.join(filter(str.isdigit, phone))
+            if phone.startswith('+998') :
+                raise forms.ValidationError("Telefon raqami noto'g'ri formatda")
+        return phone
+
+class StudentFormUpdate(forms.ModelForm):
+    class Meta:
+        model = Student
+        fields = ['first_name', 'last_name', 'phone', 'group']
+        widgets = {
+            'group': forms.Select(attrs={'class': 'form-control', 'id': 'edit-group'}),
+        }
+
+    def clean_phone(self):
+        phone = self.cleaned_data.get('phone')
+        if phone:
+            phone = ''.join(filter(str.isdigit, phone))
+            if not phone.startswith('+998'):
+                raise forms.ValidationError("Telefon raqami noto'g'ri formatda")
+        return phone
 
 class LoginForm(forms.Form):
     username = forms.CharField(widget=forms.TextInput({"class": "form-control", "placeholder": "Username"}))
