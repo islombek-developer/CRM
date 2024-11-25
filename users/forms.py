@@ -4,24 +4,13 @@ from .models import Student,User,Teacher,Group,Day,Month,DailyPayment,Attendance
 class GroupForm(forms.ModelForm):
     class Meta:
         model = Group
-        fields = ['name', 'teacher', 'monthly_payment', 'week_days']
+        fields = ['name', 'teacher', 'week_days', 'monthly_payment']
         widgets = {
-            'name': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Guruh nomini kiriting',
-            }),
-            'teacher': forms.Select(attrs={
-                'class': 'form-control',
-                'placeholder': 'O\'qituvchini tanlang',
-            }),
-            'monthly_payment': forms.NumberInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Oylik to\'lovni kiriting',
-            }),
-          
+            'teacher': forms.Select(attrs={'class': 'form-control'}),
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
+            'week_days': forms.Select(attrs={'class': 'form-control'}),
+            'monthly_payment': forms.NumberInput(attrs={'class': 'form-control'}),
         }
-
-
 
 class StudentForm(forms.ModelForm):
     class Meta:

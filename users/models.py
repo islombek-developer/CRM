@@ -6,6 +6,7 @@ from datetime import datetime, date,timedelta
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.db.models import Sum
+
 class User(AbstractUser):
     USER_ROLE =(
         ('teacher','teacher'),
@@ -34,7 +35,7 @@ class WeekDayChoices(models.TextChoices):
 
 class Group(models.Model):
     name = models.CharField(max_length=100)
-    teacher = models.ForeignKey(Teacher, on_delete=models.SET_NULL, null=True, blank=True)
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
     week_days = models.CharField(
         max_length=20,
         choices=WeekDayChoices.choices,
@@ -106,6 +107,27 @@ class Student(models.Model):
         
         return latest_payment.remaining_amount if latest_payment else 200000
 
+    @property
+    def student_count(self):
+        """Guruhdagi o‘quvchilar sonini hisoblaydi."""
+        return self.students.count()
+
+
+    @property
+    def total_payment_status(self):
+        """Guruhdagi o‘quvchilarning umumiy oylik to‘lovlarini hisoblaydi."""
+        total = 0
+        for student in self.students.all():
+            # Talabaning jami oylik to‘lovini olamiz
+            payment = student.monthlypayments.aggregate(total=Sum('oylik'))['total'] or 0
+            total += payment - (200000/30)  # To‘lov yetishmasa minus bo‘ladi
+        return total
+
+
+
+    @property
+    def total_remaining(self):
+        return DailyPayment.get_group_total_remaining(self.id)
 
 class Day(models.Model):
     group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='days')

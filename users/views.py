@@ -14,11 +14,12 @@ from .models import DailyPayment, Student, Group
 from datetime import timezone,datetime, timedelta
 from django.urls import reverse_lazy
 
+
 class GroupCreateView(LoginRequiredMixin, CreateView):
     model = Group
     form_class = GroupForm
     template_name = 'users/group_list.html'
-    success_url = reverse_lazy('group_list')
+    success_url = reverse_lazy('group_payment')
 
     def form_valid(self, form):
         messages.success(self.request, "Guruh muvaffaqiyatli yaratildi!")
@@ -26,9 +27,13 @@ class GroupCreateView(LoginRequiredMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        teachers = Teacher.objects.all()  
         context['groups'] = Group.objects.all()
-        context['teachers'] = Teacher.objects.all()  
+        context['teachers'] = teachers
+        context['form'] = self.get_form()  
         return context
+
+
 
 class GroupDeleteView(LoginRequiredMixin, DeleteView):
     model = Group
