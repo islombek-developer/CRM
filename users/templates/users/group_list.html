@@ -32,7 +32,7 @@
             <tbody>
               {% for group in groups %}
                 <tr>
-                  <td><a href="{% url 'student_list' group.id %}">{{ group.name }}</a></td>
+                  <td><a href="{% url 'student_list' group.id %}">{{ group.name  }} </a></td>
                   <td>{{ group.teacher }}</td>
                   <td>{{ group.monthly_payment }}</td>
                   <td>{{ group.week_days }}</td>

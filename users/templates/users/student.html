@@ -79,6 +79,7 @@
   </div>
 </div>
 
+
 <!-- Add Student Modal -->
 <div class="modal fade" id="addRowModal" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog" role="document">
@@ -87,39 +88,26 @@
         <h5 class="modal-title">Yangi Student</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <form method="post" action="{% url 'student_create' %}">
+      <form method="post" action="{% url 'student_create_with_group' group_id=group.id %}">
         {% csrf_token %}
         <div class="modal-body">
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group form-group-default">
                         <label>Ism</label>
-                        <input type="text" 
-                               class="form-control" 
-                               name="first_name" 
-                               required
-                               placeholder="ism kiriting">
+                        <input type="text" class="form-control" name="first_name" required placeholder="Ism kiriting">
                     </div>
                 </div>
                 <div class="col-sm-12">
                     <div class="form-group form-group-default">
                         <label>Familiya</label>
-                        <input type="text" 
-                               class="form-control" 
-                               name="last_name" 
-                               required
-                               placeholder="Famiyani kiriting">
+                        <input type="text" class="form-control" name="last_name" required placeholder="Familiyani kiriting">
                     </div>
                 </div>
                 <div class="col-sm-12">
                     <div class="form-group form-group-default">
                         <label>Telefon</label>
-                        <input type="tel" 
-                               class="form-control" 
-                               name="phone" 
-                               required
-                               value="+998">
-                               
+                        <input type="tel" class="form-control" name="phone" required value="+998">
                     </div>
                 </div>
             </div>
@@ -128,11 +116,11 @@
             <button type="submit" class="btn btn-primary">Qo'shish</button>
             <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Bekor qilish</button>
         </div>
-    </form>
-      </form>
+    </form>    
     </div>
   </div>
 </div>
+
 
 <!-- Edit Student Modal -->
 <div class="modal fade" id="editStudentModal" tabindex="-1" role="dialog" aria-hidden="true">

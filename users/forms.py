@@ -13,20 +13,25 @@ class GroupForm(forms.ModelForm):
         }
 
 class StudentForm(forms.ModelForm):
+    group_id = forms.IntegerField(widget=forms.HiddenInput(), required=False)
+
     class Meta:
         model = Student
         fields = ['first_name', 'last_name', 'phone']
-        widgets = {
-            'group': forms.HiddenInput()
-        }
 
-    def clean_phone(self):
-        phone = self.cleaned_data.get('phone')
-        if phone:
-            phone = ''.join(filter(str.isdigit, phone))
-            if phone.startswith('+998') :
-                raise forms.ValidationError("Telefon raqami noto'g'ri formatda")
-        return phone
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        group_id = self.cleaned_data.get('group_id')
+        if group_id:
+            try:
+                instance.group = Group.objects.get(id=group_id)
+            except Group.DoesNotExist:
+                raise forms.ValidationError("Guruh topilmadi")
+        
+        if commit:
+            instance.save()
+        return instance
+
 
 class StudentFormUpdate(forms.ModelForm):
     class Meta:
