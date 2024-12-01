@@ -16,6 +16,9 @@ from django.urls import reverse_lazy
 from django.contrib.sessions.models import Session
 from django.utils import timezone
 
+
+
+
 class GroupCreateView(LoginRequiredMixin, CreateView):
     model = Group
     form_class = GroupForm
@@ -23,9 +26,8 @@ class GroupCreateView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy('group_payment')
 
     def get_form_kwargs(self):
-        # This method allows passing additional kwargs to the form
         kwargs = super().get_form_kwargs()
-        kwargs['teachers'] = Teacher.objects.all()
+        kwargs['teachers'] = Teacher.objects.all()  
         return kwargs
 
     def form_valid(self, form):
@@ -34,16 +36,12 @@ class GroupCreateView(LoginRequiredMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['groups'] = Group.objects.all()
-        context['teachers'] = Teacher.objects.all()
+        context['teachers'] = Teacher.objects.all()  
         return context
-
-
-
+    
 class GroupDeleteView(LoginRequiredMixin, DeleteView):
-    model = Group
-    template_name = 'users/group_confirm_delete.html'  
-    success_url = reverse_lazy('group_list')  
+    model = Group 
+    success_url = reverse_lazy('group_payment')  
 
     def delete(self, request, *args, **kwargs):
         group = self.get_object()
@@ -228,7 +226,7 @@ class LoginView(View):
                 login(request, user)
 
                 if user.user_role == 'teacher':
-                    return redirect('teachers/dashboard')
+                    return redirect('teacher/dashboard/')
                 elif user.user_role == 'admin':
                     return redirect('/dashboard')
 

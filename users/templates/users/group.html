@@ -1,59 +1,51 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
 <div class="container mt-10">
-  <div class="col-md-12">
-    <div class="card">
-      <div class="card-header">
-        <div class="d-flex align-items-center">
-          <h4 class="card-title">Guruh Tolovlari</h4>
-
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card shadow-lg border-0">
+        <div class="card-header bg-primary text-white">
+          <div class="d-flex justify-content-between align-items-center">
+            <h4 class="card-title">Guruh Tolovlari</h4>
+          </div>
         </div>
-      </div>
-      <div class="card-body">
-        <div class="table-responsive">
-          <table id="add-row" class="display table table-striped table-hover">
-            <thead>
-              <tr>
-                <th>Nomi</th>
-                <th>O'qituvchi</th>
-                <th>To'lov</th>
-                <th>Kunlari</th>
-                <th style="width: 15%">Amallar</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for group in groups %}
+        <div class="card-body">
+          <div class="table-responsive">
+            <table id="add-row" class="table table-striped table-hover">
+              <thead class="thead-dark">
                 <tr>
-                  <td><a href="{% url 'group_payment_report' group.id %}">{{ group.name  }} </a></td>
+                  <th>Nomi</th>
+                  <th>O'qituvchi</th>
+                  <th>To'lov</th>
+                  <th>Kunlari</th>
+                  <th style="width: 15%">Amallar</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for group in groups %}
+                <tr>
+                  <td><a href="{% url 'group_payment_report' group.id %}" class="text-primary">{{ group.name }}</a></td>
                   <td>{{ group.teacher }}</td>
-                  <td>{{ group.monthly_payment }}</td>
+                  <td>{{ group.monthly_payment }} so'm</td>
                   <td>{{ group.week_days }}</td>
                   <td>
                     <div class="form-button-action">
-                      <!-- Edit Button -->
-                      <button
-                        type="button"
-                        class="btn btn-link btn-primary btn-lg"
-                        data-bs-toggle="modal"
-                        data-bs-target="#editStudentModal"
-                        data-id="{{ group.id }}"
-                      >
-                        <i class="fa fa-edit"></i>
-                      </button>
-                
-                    
+                      <!-- Payment Button styled like other buttons -->
+                      <a href="{% url 'group_payment_report' group.id %}" class="btn btn-info btn-sm">
+                        <i class="fa fa-credit-card"></i> To'lov
+                      </a>
                     </div>
                   </td>
                 </tr>
-              {% empty %}
+                {% empty %}
                 <tr>
-                  <td colspan="5">Hozircha Guruh yo'q</td>
+                  <td colspan="5" class="text-center">Hozircha Guruh yo'q</td>
                 </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

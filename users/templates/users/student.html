@@ -3,74 +3,93 @@
 {% block content %}
 <div class="container mt-10">
   <div class="col-md-12">
-    <div class="card">
-      <div class="card-header">
-        <div class="d-flex align-items-center">
-          <h4 class="card-title">Student yaratish</h4>
-          <button
-            class="btn btn-primary btn-round ms-auto"
-            data-bs-toggle="modal"
-            data-bs-target="#addRowModal"
-          >
-            <i class="fa fa-plus"></i>
-            Student 
-          </button>
-        </div>
+    <div class="card shadow-lg border-0">
+      <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white rounded-top p-3">
+        <h4 class="card-title mb-0"><i class="fas fa-user-plus me-2"></i> Student Yaratish</h4>
+        <button
+          class="btn btn-success btn-round"
+          data-bs-toggle="modal"
+          data-bs-target="#addRowModal"
+        >
+          <i class="fa fa-plus"></i> Add Student
+        </button>
       </div>
-      <div class="card-body">
+      <div class="card-body p-4">
+
         <div class="table-responsive">
-          <table id="add-row" class="display table table-striped table-hover">
-            <thead>
+          <table id="add-row" class="table table-striped table-hover">
+            <thead class="thead-dark">
               <tr>
-                <th>Ismi</th>
-                <th>Familyasi</th>
-                <th>Telefon raqami</th>
-                <th style="width: 10%">Tahrirlash</th>
+                <th>Ismi Familyasi</th>
+                <th>Telefon Raqami</th>
+                <th style="width: 15%">Tahrirlash</th>
               </tr>
             </thead>
+
             <tbody>
               {% for student in students %}
-                <tr>
-                  <td>{{ student.first_name }}</td>
-                  <td>{{ student.last_name }}</td>
-                  <td>{{ student.phone }}</td>
-                  <td>
-                    <div class="form-button-action">
-                      <!-- Edit Button -->
-                      <button
-                        type="button"
-                        class="btn btn-link btn-primary btn-lg"
-                        data-bs-toggle="modal"
-                        data-bs-target="#editStudentModal"
-                        data-id="{{ student.id }}"
-                        data-first-name="{{ student.first_name }}"
-                        data-last-name="{{ student.last_name }}"
-                        data-phone="{{ student.phone }}"
-                      >
-                        <i class="fa fa-edit"></i>
-                      </button>
-                      <!-- Delete Button -->
-                      <button
-                        type="button"
-                        class="btn btn-link btn-danger delete-student"
-                        data-id="{{ student.id }}"
-                        data-name="{{ student.first_name }} {{ student.last_name }}"
-                      >
-                      </button>
-                      <form method="post" action="{% url 'delete_student' student.id %}" style="display:inline-block;">
-                        {% csrf_token %}
-                        <a href="{% url 'delete_student' student.id %}" class="btn btn-link btn-danger">
-                            <i class="fas fa-trash-alt"></i>
-                        </a>
-                    </form>
+              <tr>
+                <td>{{ student.first_name }} {{ student.last_name }}</td>
+                <td>{{ student.phone }}</td>
+                <td class="d-flex justify-content-center">
+                  <!-- Edit Button -->
+                  <button
+                  type="button"
+                  class="btn btn-primary btn-sm"
+                  data-bs-toggle="modal"
+                  data-bs-target="#editStudentModal"
+                  data-id="{{ student.id }}"
+                  data-first-name="{{ student.first_name }}"
+                  data-last-name="{{ student.last_name }}"
+                  data-phone="{{ student.phone }}"
+                  data-group="{{ student.group.id }}"  >
+                  <i class="fa fa-edit"></i>
+                </button>
+
+                  <!-- Delete Button -->
+                  <button
+                
+                  class="btn btn-danger btn-sm"
+                    type="button"
+                    class="btn btn-danger btn-sm"
+                    data-bs-toggle="modal"
+                    data-bs-target="#deleteStudentModal{{ student.id }}"
+                    data-id="{{ student.id }}"
+                    data-name="{{ student.first_name }} {{ student.last_name }}"
+                  >
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                </td>
+              </tr>
+
+              <!-- Delete Confirmation Modal -->
+              <div class="modal fade" id="deleteStudentModal{{ student.id }}" tabindex="-1" aria-labelledby="deleteStudentModalLabel{{ student.id }}" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="deleteStudentModalLabel{{ student.id }}">Studentni O'chirish</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                  </td>
-                </tr>
+                    <div class="modal-body">
+                      <p>Siz "{{ student.first_name }} {{ student.last_name }}" studentini o'chirishni xohlaysizmi?</p>
+                    </div>
+                    <div class="modal-footer">
+                      <form method="post" action="{% url 'delete_student' student.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Ha, O'chirish</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bekor Qilish</button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               {% empty %}
-                <tr>
-                  <td colspan="4">Hozircha studentlar yo'q</td>
-                </tr>
+              <tr>
+                <td colspan="4" class="text-center text-muted">Hozircha studentlar yo'q</td>
+              </tr>
               {% endfor %}
+
             </tbody>
           </table>
         </div>

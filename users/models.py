@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.db.models import Sum
 from django.core.validators import MaxValueValidator,FileExtensionValidator
-from datetime import datetime, date,timedelta
+from datetime import datetime, date,timedelta,timezone
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.db.models import Sum
@@ -64,7 +64,7 @@ class Group(models.Model):
         for student in self.students.all():
             # Talabaning jami oylik to‘lovini olamiz
             payment = student.monthlypayments.aggregate(total=Sum('oylik'))['total'] or 0
-            total += payment - (200000/30)  # To‘lov yetishmasa minus bo‘ladi
+            total += payment - (200000) 
         return total
 
 
@@ -81,6 +81,7 @@ class Student(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
     
@@ -90,14 +91,25 @@ class Student(models.Model):
 
     @property
     def attendance_percentage(self):
-        total_days = Day.objects.filter(group=self.group).count()
-        if total_days == 0:
+        # Check if group exists to avoid errors
+        if not self.group:
             return 0
-        present_days = Attendance.objects.filter(
-            student=self, 
-            status=True
-        ).count()
-        return (present_days / total_days) * 100
+        
+        # Get all attendance records for this student
+        all_attendances = Attendance.objects.filter(student=self)
+        
+        # If no attendances, return 0
+        if not all_attendances.exists():
+            return 0
+        
+        # Total possible attendance days (based on group's days)
+        total_days = all_attendances.count()
+        
+        # Count of present days
+        present_days = all_attendances.filter(status=True).count()
+        
+        # Calculate percentage
+        return (present_days / total_days) * 100 if total_days > 0 else 0
     
     @property
     def remaining_payment(self):
@@ -107,21 +119,37 @@ class Student(models.Model):
         
         return latest_payment.remaining_amount if latest_payment else 200000
 
-    @property
-    def student_count(self):
-        """Guruhdagi o‘quvchilar sonini hisoblaydi."""
-        return self.students.count()
+    def daily_payment_calculation(self):
 
+        if not self.group:
+            return 0
 
-    @property
-    def total_payment_status(self):
-        """Guruhdagi o‘quvchilarning umumiy oylik to‘lovlarini hisoblaydi."""
-        total = 0
-        for student in self.students.all():
-            # Talabaning jami oylik to‘lovini olamiz
-            payment = student.monthlypayments.aggregate(total=Sum('oylik'))['total'] or 0
-            total += payment - (200000/30)  # To‘lov yetishmasa minus bo‘ladi
-        return total
+        daily_payment = self.group.monthly_payment / 30
+
+        # Get or create daily payment record
+        daily_payment_obj, created = DailyPayment.objects.get_or_create(
+            student=self,
+            defaults={
+                'daily_amount': daily_payment,
+                'remaining_amount': self.group.monthly_payment
+            }
+        )
+
+        # Check if 24 hours have passed since last payment
+        current_time = timezone.now()
+        if not created and (current_time - daily_payment_obj.last_payment_date).days >= 1:
+            # Subtract daily payment
+            daily_payment_obj.remaining_amount -= daily_payment
+            
+            # If remaining amount is less than or equal to zero, reset to full amount
+            if daily_payment_obj.remaining_amount <= 0:
+                daily_payment_obj.remaining_amount = self.group.monthly_payment
+                daily_payment_obj.last_reset_date = current_time
+            
+            daily_payment_obj.last_payment_date = current_time
+            daily_payment_obj.save()
+
+        return daily_payment_obj.remaining_amount
 
 
 
@@ -233,6 +261,9 @@ class Attendance(models.Model):
         
         super().save(*args, **kwargs)
 
+
+
+
 class DailyPayment(models.Model):
     group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='daily_payments')
     student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='daily_payments')
@@ -251,27 +282,45 @@ class DailyPayment(models.Model):
         return f"{self.student.full_name} - {self.payment_date} - {self.paid_amount}"
 
     def save(self, *args, **kwargs):
-        if not self.pk:  # Yangi to'lov uchun
-            last_payment = DailyPayment.objects.filter(
-                student=self.student
-            ).order_by('-payment_date').first()
-            
+        current_month = timezone.now().month
+        current_year = timezone.now().year
+        last_payment = DailyPayment.objects.filter(student=self.student).order_by('-payment_date').first()
+
+        if not self.pk:  # New payment
             if last_payment:
-                self.remaining_amount = last_payment.remaining_amount - self.paid_amount
+                last_month = last_payment.payment_date.month
+                last_year = last_payment.payment_date.year
+                
+                # If last payment was from a different month, reset remaining amount
+                if last_month != current_month or last_year != current_year:
+                    self.remaining_amount = self.monthly_fee - self.paid_amount
+                else:
+                    # Deduct the paid amount from the previous remaining amount
+                    self.remaining_amount = last_payment.remaining_amount - self.paid_amount
             else:
+                # First payment for the student, set the full monthly fee
                 self.remaining_amount = self.monthly_fee - self.paid_amount
-        
+        else:
+            # In case of update, if the payment is from a new month, reset the balance
+            if self.payment_date.month != last_payment.payment_date.month:
+                self.remaining_amount = self.monthly_fee - self.paid_amount
+            else:
+                self.remaining_amount = last_payment.remaining_amount - self.paid_amount
+
         super().save(*args, **kwargs)
-    
+
     @classmethod
     def get_student_balance(cls, student_id):
         """O'quvchining joriy balansini qaytaradi"""
         latest_payment = cls.objects.filter(
             student_id=student_id
         ).order_by('-payment_date').first()
-        
-        return latest_payment.remaining_amount if latest_payment else 200000
-    
+
+        if not latest_payment:
+            return 200000  # Or `cls.monthly_fee` if you'd like to refer to it dynamically
+
+        return latest_payment.remaining_amount
+
     @classmethod
     def get_group_total_remaining(cls, group_id):
         """Guruh bo'yicha umumiy qolgan summani qaytaradi"""
@@ -280,7 +329,7 @@ class DailyPayment(models.Model):
         ).values('student').annotate(
             latest_date=models.Max('payment_date')
         )
-        
+
         total_remaining = 0
         for payment in latest_payments:
             student_latest = cls.objects.filter(
@@ -289,38 +338,36 @@ class DailyPayment(models.Model):
             ).first()
             if student_latest:
                 total_remaining += student_latest.remaining_amount
-                
+            else:
+                # If no payments found, add the full monthly fee for this student
+                student = Student.objects.get(id=payment['student'])
+                total_remaining += 200000  # Or `student.monthly_fee` if you want flexibility
+
+        # Handle students who have never made a payment in the group
+        students_in_group = Student.objects.filter(group_id=group_id)
+        paid_students = [payment['student'] for payment in latest_payments]
+        unpaid_students = students_in_group.exclude(id__in=paid_students)
+
+        for student in unpaid_students:
+            total_remaining += 200000  # Full balance for unpaid students
+
         return total_remaining
-    
-    @property
-    def total_payment_status(self):
-        """Guruhdagi o‘quvchilarning umumiy oylik to‘lovlarini hisoblaydi."""
-        total = 0
-        for student in self.students.all():
-            # Talabaning jami oylik to‘lovini olamiz
-            payment = student.monthlypayments.aggregate(total=Sum('oylik'))['total'] or 0
-            total += payment - (200000)  # To‘lov yetishmasa minus bo‘ladi
-        return total
+
     @classmethod
     def get_total_payments_across_all_groups(cls):
         """Hamma guruhdagi o‘quvchilarning jami to‘lovlarini hisoblaydi."""
         total_paid = 0
-        
+
         # Loop over all groups
-        for group in Group.objects.all():  
+        for group in Group.objects.all():
             # Loop over all students in the current group
             for student in group.students.all():
                 # Sum the paid_amount for each student's DailyPayment records
                 total_paid += student.daily_payments.aggregate(total=Sum('paid_amount'))['total'] or 0
-        
+
         return total_paid
-# Signals
-@receiver(post_save, sender=Group)
-def create_initial_days(sender, instance, created, **kwargs):
-    """Yangi guruh yaratilganda joriy oy uchun dars kunlarini yaratish"""
-    if created:
-        today = date.today()
-        Day.create_days_for_month(instance, today.year, today.month)
+
+
 
 class Month(models.Model):
     group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='month')

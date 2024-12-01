@@ -1,34 +1,47 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container">
-    <h2>{{ student.full_name }} - To'lov qo'shish</h2>
+<div class="container mt-10">
+    <h2 class="mb-4 text-center text-primary">{{ student.first_name }} - To'lov qo'shish</h2>
     
     {% if messages %}
-    <div class="messages">
+    <div class="mb-4">
         {% for message in messages %}
-        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
             {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
         {% endfor %}
     </div>
     {% endif %}
 
-    <form method="post">
-        {% csrf_token %}
-        <div class="form-group">
-            <label>Guruh: {{ student.group.name }}</label>
+    <div class="card shadow-lg border-0 rounded">
+        <div class="card-body p-4">
+            <h5 class="card-title text-center text-secondary mb-4">To'lovni kiriting</h5>
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="form-group mb-4">
+                    <label for="group" class="form-label">Guruh</label>
+                    <input type="text" id="group" class="form-control" value="{{ student.group.name }}" readonly>
+                </div>
+                
+                <div class="form-group mb-4">
+                    <label for="paid_amount" class="form-label">To'lov summasi</label>
+                    <input type="number" 
+                           id="paid_amount" 
+                           name="paid_amount" 
+                           class="form-control" 
+                           required 
+                           min="0" 
+                           placeholder="Masalan: 100,000"
+                           aria-describedby="paidAmountHelp">
+                    <small id="paidAmountHelp" class="form-text text-muted">Bu yerga to'lov summasini kiriting.</small>
+                </div>
+                
+                <button type="submit" class="btn btn-primary w-100 py-2">To'lovni saqlash</button>
+            </form>
         </div>
-        <div class="form-group">
-            <label for="paid_amount">To'lov summasi</label>
-            <input type="number" 
-                   class="form-control" 
-                   id="paid_amount" 
-                   name="paid_amount" 
-                   required 
-                   min="0">
-        </div>
-        <button type="submit" class="btn btn-primary">To'lovni saqlash</button>
-    </form>
+    </div>
 </div>
 {% endblock %}

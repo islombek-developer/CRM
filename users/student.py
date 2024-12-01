@@ -48,22 +48,7 @@ class StudentCreateView(LoginRequiredMixin, CreateView):
         context['group_id'] = group_id  
         return context
 
-# class StudentCreateView(LoginRequiredMixin, View):
-#     def get(self, request, group_id=None):
-#         form = StudentForm(initial={'group_id': group_id} if group_id else None)
-#         return render(request, 'users/student.html', {'form': form})
 
-#     def post(self, request, group_id=None):
-#         # POST ma'lumotlariga group_id qo'shish
-#         post_data = request.POST.copy() 
-#         post_data['group_id'] = group_id or post_data.get('group_id')
-        
-#         form = StudentForm(post_data)
-#         if form.is_valid():
-#             student = form.save()
-#             messages.success(request, "Student muvaffaqiyatli qo'shildi")
-#             return redirect('student_list', group_id=group_id) 
-#         return render(request, 'users/student.html', {'form': form})
 
 class StudentListView(LoginRequiredMixin, ListView):
     model = Student
@@ -105,12 +90,4 @@ class StudentDeleteView(LoginRequiredMixin, DeleteView):
         messages.success(request, "Student o'chirildi!")
         return super().delete(request, *args, **kwargs)
     
-class StudentDeleteView(LoginRequiredMixin, DeleteView):
-    model = Student
-    template_name = 'users/delete_student.html'  
-    success_url = reverse_lazy('group_payment')  
 
-    def delete(self, request, *args, **kwargs):
-        student = self.get_object()
-        messages.success(self.request, f"Guruh '{student.first_name}' muvaffaqiyatli o'chirildi!")
-        return super().delete(request, *args, **kwargs)
