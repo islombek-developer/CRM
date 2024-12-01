@@ -6,7 +6,11 @@ class GroupForm(forms.ModelForm):
         model = Group
         fields = ['name', 'teacher', 'week_days', 'monthly_payment']  
 
-
+        def __init__(self, *args, **kwargs):
+            teachers = kwargs.pop('teachers', None)
+            super().__init__(*args, **kwargs)
+            if teachers:
+                self.fields['teachers'].queryset = teachers
 
 class StudentForm(forms.ModelForm):
     group_id = forms.IntegerField(widget=forms.HiddenInput(), required=False)

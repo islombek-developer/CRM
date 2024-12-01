@@ -1,0 +1,68 @@
+{% extends 'base.html' %}  
+{# Adjust base template as needed #}
+
+{% block content %}
+<div class="container">
+    <h2>Davomat - {{ group.name }} Guruhi ({{ today|date:"d.m.Y" }})</h2>
+    
+    <form method="post" action="{% url 'save_attendance' group_id=group.id %}">
+        {% csrf_token %}
+        
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>№</th>
+                    <th>O'quvchi nomi</th>
+                    <th>Davomat</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in attendance_data %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ item.student.full_name }}</td>
+                    <td>
+                        <div class="form-check form-check-inline">
+                            <input 
+                                type="radio" 
+                                name="attendance_{{ item.student.id }}" 
+                                id="present_{{ item.student.id }}" 
+                                value="present" 
+                                class="form-check-input"
+                                {% if item.attendance.status %}checked{% endif %}
+                            >
+                            <label 
+                                class="form-check-label" 
+                                for="present_{{ item.student.id }}"
+                            >
+                                Keldi
+                            </label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input 
+                                type="radio" 
+                                name="attendance_{{ item.student.id }}" 
+                                id="absent_{{ item.student.id }}" 
+                                value="absent" 
+                                class="form-check-input"
+                                {% if not item.attendance.status %}checked{% endif %}
+                            >
+                            <label 
+                                class="form-check-label" 
+                                for="absent_{{ item.student.id }}"
+                            >
+                                Kelmadi
+                            </label>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Davomatni Saqlash</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

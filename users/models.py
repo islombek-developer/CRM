@@ -18,6 +18,7 @@ class User(AbstractUser):
     jobs = models.CharField(max_length=200, blank=True, null=True)
     user_role = models.CharField(max_length=100,choices=USER_ROLE,default="teacher")
 
+
 class Teacher(models.Model):
     user = models.OneToOneField(User,on_delete=models.CASCADE)
     date_of = models.DateField(null=True,blank=True )
@@ -163,12 +164,12 @@ from datetime import date, timedelta
 
 class Attendance(models.Model):
     group = models.ForeignKey(
-        'Group', 
+        Group, 
         on_delete=models.CASCADE, 
         related_name='attendances'
     )
     student = models.ForeignKey(
-        'Student', 
+        Student, 
         on_delete=models.CASCADE, 
         related_name='attendances'
     )

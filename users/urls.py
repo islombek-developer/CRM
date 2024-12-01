@@ -3,8 +3,7 @@ from django.urls import path
 from .views import LoginView,RegisterView,GroupPaymentListView,Home,LogautView,GroupCreateView,TeacherView,GroupDeleteView,GroupPaymentsListView
 from .student import StudentCreateView,StudentListView,StudentUpdateView,StudentDeleteView
 from . import views
-
-
+from .davomat import attendance_page,GroupAttendListView,save_attendance,attendance_list
 
 
 
@@ -30,5 +29,11 @@ urlpatterns = [
     path('groups/create/', GroupCreateView.as_view(), name='create_group'),
 
        
+    path('group/<int:group_id>/attendance-list/', attendance_list, name='attendance_list'),
+
+    path('group/<int:group_id>/save-attendance/', save_attendance, name='save_attendance'),
+    path('group/<int:group_id>/attendance/', attendance_page, name='attendance_page'),
+
+    path('attendance-groups/',GroupAttendListView.as_view(),name='attendance_group'),
 
 ]
