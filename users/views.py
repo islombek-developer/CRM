@@ -1,4 +1,4 @@
-from .models import Student,User,Teacher,Group,Day,Month,DailyPayment,Attendance
+from .models import Student,User,Teacher,Group,Month,DailyPayment,Attendance
 from django.contrib.auth import authenticate, login,logout
 from django.shortcuts import render, redirect,get_object_or_404
 from django.views import View
@@ -13,7 +13,8 @@ from django.contrib import messages
 from .models import DailyPayment, Student, Group
 from datetime import timezone,datetime, timedelta
 from django.urls import reverse_lazy
-
+from django.contrib.sessions.models import Session
+from django.utils import timezone
 
 class GroupCreateView(LoginRequiredMixin, CreateView):
     model = Group
@@ -21,16 +22,20 @@ class GroupCreateView(LoginRequiredMixin, CreateView):
     template_name = 'users/group_list.html'
     success_url = reverse_lazy('group_payment')
 
+    def get_form_kwargs(self):
+        # This method allows passing additional kwargs to the form
+        kwargs = super().get_form_kwargs()
+        kwargs['teachers'] = Teacher.objects.all()
+        return kwargs
+
     def form_valid(self, form):
         messages.success(self.request, "Guruh muvaffaqiyatli yaratildi!")
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        teachers = Teacher.objects.all()  
         context['groups'] = Group.objects.all()
-        context['teachers'] = teachers
-        context['form'] = self.get_form()  
+        context['teachers'] = Teacher.objects.all()
         return context
 
 
@@ -57,6 +62,14 @@ class GroupPaymentListView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         return context
     
+class GroupPaymentsListView(LoginRequiredMixin, ListView):
+    model = Group
+    template_name = 'users/group.html'
+    context_object_name = 'groups'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
 
 class StudentPaymentListView(LoginRequiredMixin, ListView):
     model = Student
@@ -99,10 +112,10 @@ def add_payment(request, student_id):
         except Exception as e:
             messages.error(request, f"Xatolik yuz berdi: {str(e)}")
             
-        return redirect('student_payment_list', group_id=student.group.id)
+        return redirect('group_payment_report', group_id=student.group.id)
         
     student = get_object_or_404(Student, id=student_id)
-    return render(request, 'payments/add_payment.html', {'student': student})
+    return render(request, 'users/add_payment.html', {'student': student})
 
 @login_required
 def student_payment_history(request, student_id):
@@ -122,7 +135,7 @@ def student_payment_history(request, student_id):
         'remaining_amount': remaining_amount
     }
     
-    return render(request, 'payments/payment_history.html', context)
+    return render(request, 'users/payment_history.html', context)
 
 @login_required
 def group_payment_report(request, group_id):
@@ -162,7 +175,7 @@ def group_payment_report(request, group_id):
         'student_payments': student_payments
     }
     
-    return render(request, 'payments/group_report.html', context)
+    return render(request, 'users/group_report.html', context)
 
 
 class Home(View, LoginRequiredMixin):
@@ -210,6 +223,8 @@ class LoginView(View):
             password = form.cleaned_data['password']
             user = authenticate(username=username, password=password)
             if user is not None:
+                self.logout_other_sessions(user)
+
                 login(request, user)
 
                 if user.user_role == 'teacher':
@@ -217,9 +232,15 @@ class LoginView(View):
                 elif user.user_role == 'admin':
                     return redirect('/dashboard')
 
-
         form = LoginForm()
         return render(request, 'users/login.html', {'form': form})
+
+    def logout_other_sessions(self, user):
+        sessions = Session.objects.filter(expire_date__gte=datetime.now())
+        for session in sessions:
+            data = session.get_decoded()
+            if data.get('_auth_user_id') == str(user.id):
+                session.delete()
 
 
 class RegisterView(AdminRequiredMixin, View):

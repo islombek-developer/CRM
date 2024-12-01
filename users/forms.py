@@ -1,16 +1,22 @@
 from django import forms
-from .models import Student,User,Teacher,Group,Day,Month,DailyPayment,Attendance
+from .models import Student,User,Teacher,Group,DailyPayment,Attendance
 
 class GroupForm(forms.ModelForm):
+    teacher = forms.ModelChoiceField(
+        queryset=Teacher.objects.all(), 
+        empty_label="O'qituvchini tanlang"
+    )
+
     class Meta:
         model = Group
-        fields = ['name', 'teacher', 'week_days', 'monthly_payment']
-        widgets = {
-            'teacher': forms.Select(attrs={'class': 'form-control'}),
-            'name': forms.TextInput(attrs={'class': 'form-control'}),
-            'week_days': forms.Select(attrs={'class': 'form-control'}),
-            'monthly_payment': forms.NumberInput(attrs={'class': 'form-control'}),
-        }
+        fields = ['name', 'teacher', 'monthly_payment', 'week_days']
+
+    def __init__(self, *args, **kwargs):
+        teachers = kwargs.pop('teachers', None)
+        super().__init__(*args, **kwargs)
+        
+        if teachers is not None:
+            self.fields['teacher'].queryset = teachers
 
 class StudentForm(forms.ModelForm):
     group_id = forms.IntegerField(widget=forms.HiddenInput(), required=False)

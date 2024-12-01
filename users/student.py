@@ -8,62 +8,62 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from .views import View
 
-# class StudentCreateView(LoginRequiredMixin, CreateView):
-#     model = Student
-#     form_class = StudentForm
-#     template_name = 'users/student.html'
+class StudentCreateView(LoginRequiredMixin, CreateView):
+    model = Student
+    form_class = StudentForm
+    template_name = 'users/student.html'
 
-#     def get_initial(self):
-#         initial = super().get_initial()
-#         group_id = self.kwargs.get('group_id')  
-#         try:
-#             group = Group.objects.get(id=group_id)
-#             initial['group'] = group  
-#         except Group.DoesNotExist:
-#             pass
-#         return initial
+    def get_initial(self):
+        initial = super().get_initial()
+        group_id = self.kwargs.get('group_id')  
+        try:
+            group = Group.objects.get(id=group_id)
+            initial['group'] = group  
+        except Group.DoesNotExist:
+            pass
+        return initial
 
-#     def form_valid(self, form):
-#         student = form.save(commit=False)
-#         group_id = self.kwargs.get('group_id')
+    def form_valid(self, form):
+        student = form.save(commit=True)
+        group_id = self.kwargs.get('group_id')
 
-#         if not group_id:
-#             messages.error(self.request, "Guruh ID'si taqdim etilmadi!")
-#             return redirect(self.request.path_info)
+        if not group_id:
+            messages.error(self.request, "Guruh ID'si taqdim etilmadi!")
+            return redirect(self.request.path_info)
 
-#         try:
-#             group = Group.objects.get(id=group_id)
-#             student.group = group
-#         except Group.DoesNotExist:
-#             messages.error(self.request, "Bunday guruh mavjud emas!")
-#             return redirect(self.request.path_info)
+        try:
+            group = Group.objects.get(id=group_id)
+            student.group = group
+        except Group.DoesNotExist:
+            messages.error(self.request, "Bunday guruh mavjud emas!")
+            return redirect(self.request.path_info)
 
-#         student.save()
-#         messages.success(self.request, f"{student.first_name} {student.last_name} muvaffaqiyatli qo'shildi!")
-#         return redirect('student_list', group_id=group.id)
+        student.save()
+        messages.success(self.request, f"{student.first_name} {student.last_name} muvaffaqiyatli qo'shildi!")
+        return redirect('student_list', group_id=group.id)
 
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         group_id = self.kwargs.get('group_id')  
-#         context['group_id'] = group_id  
-#         return context
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        group_id = self.kwargs.get('group_id')  
+        context['group_id'] = group_id  
+        return context
 
-class StudentCreateView(LoginRequiredMixin, View):
-    def get(self, request, group_id=None):
-        form = StudentForm(initial={'group_id': group_id} if group_id else None)
-        return render(request, 'users/student.html', {'form': form})
+# class StudentCreateView(LoginRequiredMixin, View):
+#     def get(self, request, group_id=None):
+#         form = StudentForm(initial={'group_id': group_id} if group_id else None)
+#         return render(request, 'users/student.html', {'form': form})
 
-    def post(self, request, group_id=None):
-        # POST ma'lumotlariga group_id qo'shish
-        post_data = request.POST.copy() 
-        post_data['group_id'] = group_id or post_data.get('group_id')
+#     def post(self, request, group_id=None):
+#         # POST ma'lumotlariga group_id qo'shish
+#         post_data = request.POST.copy() 
+#         post_data['group_id'] = group_id or post_data.get('group_id')
         
-        form = StudentForm(post_data)
-        if form.is_valid():
-            student = form.save()
-            messages.success(request, "Student muvaffaqiyatli qo'shildi")
-            return redirect('student_list', group_id=group_id) 
-        return render(request, 'users/student.html', {'form': form})
+#         form = StudentForm(post_data)
+#         if form.is_valid():
+#             student = form.save()
+#             messages.success(request, "Student muvaffaqiyatli qo'shildi")
+#             return redirect('student_list', group_id=group_id) 
+#         return render(request, 'users/student.html', {'form': form})
 
 class StudentListView(LoginRequiredMixin, ListView):
     model = Student

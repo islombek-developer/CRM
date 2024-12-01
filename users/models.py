@@ -129,17 +129,36 @@ class Student(models.Model):
     def total_remaining(self):
         return DailyPayment.get_group_total_remaining(self.id)
 
-class Day(models.Model):
-    group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='days')
-    date = models.DateField(default=date.today)
+from django.db import models
+from django.utils import timezone
+from datetime import date, timedelta
+
+class Attendance(models.Model):
+    group = models.ForeignKey(
+        'Group', 
+        on_delete=models.CASCADE, 
+        related_name='attendances'
+    )
+    student = models.ForeignKey(
+        'Student', 
+        on_delete=models.CASCADE, 
+        related_name='attendances'
+    )
+    date = models.DateField(default=timezone.localdate)
+    status = models.BooleanField(default=True)
+    note = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        unique_together = ['group', 'date']
+        unique_together = ['student', 'group', 'date']
         ordering = ['-date']
+        verbose_name = 'Attendance'
+        verbose_name_plural = 'Attendances'
 
     def __str__(self):
-        return f"{self.date.strftime('%B %d, %Y')} - {self.group.name}"
+        status_text = "Keldi" if self.status else "Kelmadi"
+        return f"{self.student.full_name} - {self.date} - {status_text}"
 
     @property
     def month(self):
@@ -149,62 +168,70 @@ class Day(models.Model):
     def day_of_month(self):
         return self.date.day
 
-    @property
-    def attendance_count(self):
-        return self.attendance_set.filter(status=True).count()
-    
     @classmethod
     def create_days_for_month(cls, group, year, month):
-        """Berilgan oy uchun darskunlarini yaratish"""
+        """
+        Create attendance records for a specific group for a given month
+        
+        Args:
+            group (Group): The group to create attendance for
+            year (int): Year of the month
+            month (int): Month to create attendance for
+        
+        Returns:
+            list: List of dates created
+        """
         start_date = date(year, month, 1)
         
-        # Oyning oxirgi kuni
+        # Determine the last day of the month
         if month == 12:
             end_date = date(year + 1, 1, 1) - timedelta(days=1)
         else:
             end_date = date(year, month + 1, 1) - timedelta(days=1)
         
         current_date = start_date
-        created_days = []
+        created_dates = []
         
         while current_date <= end_date:
-            # Guruhning dars kunlarini tekshirish
+            # Determine if the day should have an attendance record based on group's schedule
             should_create = False
             
-          
             if group.week_days == WeekDayChoices.MON_WED_FRI and current_date.weekday() in [0, 2, 4]:
                 should_create = True
             elif group.week_days == WeekDayChoices.TUE_THU_SAT and current_date.weekday() in [1, 3, 5]:
                 should_create = True
-                
-            if should_create:
-                day, created = cls.objects.get_or_create(
-                    group=group,
-                    date=current_date
-                )
-                if created:
-                    created_days.append(day)
-                    
-            current_date += timedelta(days=1)
             
-        return created_days
+            # Create attendance record if it doesn't already exist
+            if should_create:
+                students = group.students.all()
+                for student in students:
+                    cls.objects.get_or_create(
+                        group=group, 
+                        student=student, 
+                        date=current_date,
+                        defaults={'status': False}  # Default to absent
+                    )
+                created_dates.append(current_date)
+            
+            current_date += timedelta(days=1)
+        
+        return created_dates
 
-class Attendance(models.Model):
-    group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='attendance')
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    date = models.ForeignKey(Day, on_delete=models.CASCADE)
-    status = models.BooleanField(default=True)
-    note = models.TextField(blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    
-    class Meta:
-        unique_together = ['student', 'date']
-        ordering = ['-date__date']
-    
-    def __str__(self):
-        status_text = "Keldi" if self.status else "Kelmadi"
-        return f"{self.student.full_name} - {self.date.date} - {status_text}"
+    def save(self, *args, **kwargs):
+        """
+        Override save method to ensure data integrity
+        """
+        # Ensure no duplicate attendance records
+        existing = Attendance.objects.filter(
+            student=self.student, 
+            group=self.group, 
+            date=self.date
+        ).exclude(pk=self.pk)
+        
+        if existing.exists():
+            raise ValueError("An attendance record for this student, group, and date already exists.")
+        
+        super().save(*args, **kwargs)
 
 class DailyPayment(models.Model):
     group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='daily_payments')
@@ -272,7 +299,7 @@ class DailyPayment(models.Model):
         for student in self.students.all():
             # Talabaning jami oylik to‘lovini olamiz
             payment = student.monthlypayments.aggregate(total=Sum('oylik'))['total'] or 0
-            total += payment - (200000/30)  # To‘lov yetishmasa minus bo‘ladi
+            total += payment - (200000)  # To‘lov yetishmasa minus bo‘ladi
         return total
     @classmethod
     def get_total_payments_across_all_groups(cls):
@@ -302,64 +329,6 @@ class Month(models.Model):
     def __str__(self) -> str:
         return f"{self.month} "
 
-
-
-# class DailyPayment(models.Model):
-#     group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='daily_payments')
-#     student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='daily_payments')
-#     payment_date = models.DateField(auto_now_add=True)
-#     monthly_fee = models.IntegerField(default=200000)  # Oylik to'lov
-#     remaining_amount = models.IntegerField()  # Qolgan summa
-#     paid_amount = models.IntegerField()  # Shu kun to'langan summa
-    
-#     def save(self, *args, **kwargs):
-#         # Agar yangi yozuv bo'lsa
-#         if not self.pk:
-#             # Oxirgi to'lov yozuvini tekshirish
-#             last_payment = DailyPayment.objects.filter(
-#                 student=self.student
-#             ).order_by('-payment_date').first()
-            
-#             if last_payment:
-#                 # Agar oldingi to'lov mavjud bo'lsa, qolgan summani olish
-#                 self.remaining_amount = last_payment.remaining_amount - self.paid_amount
-#             else:
-#                 # Agar birinchi to'lov bo'lsa
-#                 self.remaining_amount = self.monthly_fee - self.paid_amount
-        
-#         super().save(*args, **kwargs)
-
-#     def __str__(self):
-#         return f"{self.student.first_name} - {self.payment_date} - Qoldi: {self.remaining_amount}"
-    
-#     @classmethod
-#     def get_student_balance(cls, student_id):
-#         """O'quvchining joriy balansini qaytaradi"""
-#         latest_payment = cls.objects.filter(
-#             student_id=student_id
-#         ).order_by('-payment_date').first()
-        
-#         return latest_payment.remaining_amount if latest_payment else 200000
-    
-#     @classmethod
-#     def get_group_total_remaining(cls, group_id):
-#         """Guruh bo'yicha umumiy qolgan summani qaytaradi"""
-#         latest_payments = cls.objects.filter(
-#             group_id=group_id
-#         ).values('student').annotate(
-#             latest_date=models.Max('payment_date')
-#         )
-        
-#         total_remaining = 0
-#         for payment in latest_payments:
-#             student_latest = cls.objects.filter(
-#                 student_id=payment['student'],
-#                 payment_date=payment['latest_date']
-#             ).first()
-#             if student_latest:
-#                 total_remaining += student_latest.remaining_amount
-                
-#         return total_remaining
 
 
 

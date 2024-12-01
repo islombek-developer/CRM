@@ -72,26 +72,28 @@
   </div>
 </div>
 <!-- Add Group Modal -->
-<div class="modal fade" id="addRowModal" tabindex="-1" role="dialog" aria-hidden="true">
+<!-- Add Group Modal -->
+<div class="modal fade" id="addRowModal" tabindex="-1" role="dialog" aria-labelledby="addGroupModalTitle" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <div class="modal-header no-bd">
-        <h5 class="modal-title">Yangi Guruh Qo'shish</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      <div class="modal-header">
+        <h5 class="modal-title" id="addGroupModalTitle">Yangi Guruh Qo'shish</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Yopish"></button>
       </div>
-      <form method="post" action="{% url 'create_group' %}">
+      
+      <form method="post" action="{% url 'create_group' %}" novalidate>
         {% csrf_token %}
         <div class="modal-body">
           <div class="row">
             <!-- Name Field -->
-            <div class="col-sm-12">
-              <div class="form-group form-group-default">
-                <label for="{{ form.name.id_for_label }}">Nomi</label>
-                {{ form.name }}
+            <div class="col-sm-12 mb-3">
+              <div class="form-group">
+                <label for="{{ form.name.id_for_label }}" class="form-label">Nomi</label>
+                <input type="text" class="form-control" id="{{ form.name.id_for_label }}" name="{{ form.name.name }}" value="{{ form.name.value|default:'' }}">
                 {% if form.name.errors %}
-                  <div class="invalid-feedback">
+                  <div class="invalid-feedback d-block">
                     {% for error in form.name.errors %}
-                      <p>{{ error }}</p>
+                      <p class="text-danger">{{ error }}</p>
                     {% endfor %}
                   </div>
                 {% endif %}
@@ -99,14 +101,19 @@
             </div>
 
             <!-- Teacher Field -->
-            <div class="col-sm-12">
-              <div class="form-group form-group-default">
-                <label for="{{ form.teacher.id_for_label }}">O'qituvchi</label>
-                {{ form.teacher }}
+            <div class="col-sm-12 mb-3">
+              <div class="form-group">
+                <label for="{{ form.teacher.id_for_label }}" class="form-label">O'qituvchi</label>
+                <select class="form-control" id="{{ form.teacher.id_for_label }}" name="{{ form.teacher.name }}">
+                  <option value="">O'qituvchini tanlang</option>
+                  {% for teacher in teachers %}
+                    <option value="{{ teacher.id }}" {% if form.teacher.value == teacher.id %}selected{% endif %}>{{ teacher.name }}</option>
+                  {% endfor %}
+                </select>
                 {% if form.teacher.errors %}
-                  <div class="invalid-feedback">
+                  <div class="invalid-feedback d-block">
                     {% for error in form.teacher.errors %}
-                      <p>{{ error }}</p>
+                      <p class="text-danger">{{ error }}</p>
                     {% endfor %}
                   </div>
                 {% endif %}
@@ -114,14 +121,14 @@
             </div>
 
             <!-- Monthly Payment Field -->
-            <div class="col-sm-12">
-              <div class="form-group form-group-default">
-                <label for="{{ form.monthly_payment.id_for_label }}">Oylik to'lov</label>
-                {{ form.monthly_payment }}
+            <div class="col-sm-12 mb-3">
+              <div class="form-group">
+                <label for="{{ form.monthly_payment.id_for_label }}" class="form-label">Oylik to'lov</label>
+                <input type="number" class="form-control" id="{{ form.monthly_payment.id_for_label }}" name="{{ form.monthly_payment.name }}" value="{{ form.monthly_payment.value|default:'' }}">
                 {% if form.monthly_payment.errors %}
-                  <div class="invalid-feedback">
+                  <div class="invalid-feedback d-block">
                     {% for error in form.monthly_payment.errors %}
-                      <p>{{ error }}</p>
+                      <p class="text-danger">{{ error }}</p>
                     {% endfor %}
                   </div>
                 {% endif %}
@@ -129,24 +136,22 @@
             </div>
 
             <!-- Week Days Field -->
-            <div class="col-sm-12">
-              <div class="form-group form-group-default">
-                <label for="{{ form.week_days.id_for_label }}">Kunlari</label>
-                {{ form.week_days }}
-                {% if form.week_days.errors %}
-                  <div class="invalid-feedback">
-                    {% for error in form.week_days.errors %}
-                      <p>{{ error }}</p>
-                    {% endfor %}
-                  </div>
-                {% endif %}
+            <div class="col-sm-12 mb-3">
+              <div class="form-group">
+                <label for="{{ form.week_days.id_for_label }}" class="form-label">Kunlari</label>
+                <select class="form-control" id="{{ form.week_days.id_for_label }}" name="{{ form.week_days.name }}" multiple>
+                  {% for day in week_days %}
+                    <option value="{{ day.0 }}" >{{ day.week_days }}</option>
+                  {% endfor %}
+                </select>
               </div>
             </div>
           </div>
         </div>
-        <div class="modal-footer no-bd">
+        
+        <div class="modal-footer">
           <button type="submit" class="btn btn-primary">Qo'shish</button>
-          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Bekor qilish</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bekor qilish</button>
         </div>
       </form>
     </div>

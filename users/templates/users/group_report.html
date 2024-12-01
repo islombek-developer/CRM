@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block content %}
+<div class="container mt-10">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">{{ group.name }} - Guruh to'lovlari hisoboti</h3>
+        </div>
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="alert alert-success text-center">
+                        <h5 class="mb-1">Umumiy to'langan summa</h5>
+                        <p class="fs-4">{{ monthly_stats.total_paid|intcomma }} so'm</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="alert alert-warning text-center">
+                        <h5 class="mb-1">Umumiy qolgan balans</h5>
+                        <p class="fs-4">{{ monthly_stats.total_remaining|intcomma }} so'm</p>
+                    </div>
+                </div>
+            </div>
+
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-dark text-center">
+                    <tr>
+                        <th>O'quvchi</th>
+                        <th>To'langan summa</th>
+                        <th>Qolgan balans</th>
+                        <th>Amallar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in student_payments %}
+                    <tr>
+                        <td class="text-center">{{ item.student.full_name }}</td>
+                        <td class="text-center">{{ item.total_paid|intcomma }} so'm</td>
+                        <td class="text-center">{{ item.remaining|intcomma }} so'm</td>
+                        <td class="text-center">
+                            <a href="{% url 'student_payment_history' item.student.id %}" 
+                               class="btn btn-sm btn-info me-1">
+                                To'lov tarixi
+                            </a>
+                            <a href="{% url 'add_payment' item.student.id %}" 
+                               class="btn btn-sm btn-primary">
+                                To'lov qo'shish
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center text-muted">Guruhda o'quvchilar yo'q</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

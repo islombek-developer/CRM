@@ -42,9 +42,11 @@ INSTALLED_APPS = [
     'users',
     'teachers',
     'django_session_timeout',
+    'django.contrib.humanize',
 ]
 
 MIDDLEWARE = [
+ 
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -54,6 +56,23 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_session_timeout.middleware.SessionTimeoutMiddleware'
 ]
+
+Loging ={
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+    },
+}
+
 SESSION_COOKIE_AGE = 3600
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False 

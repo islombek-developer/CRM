@@ -192,8 +192,8 @@ Circles.create({
 //Notify
 $.notify({
 	icon: 'icon-bell',
-	title: 'Kaiadmin',
-	message: 'Premium Bootstrap 5 Admin Dashboard',
+	title: 'Admin',
+	message: 'Assalomu Alaykum Tizimga hushkelibsiz',
 },{
 	type: 'secondary',
 	placement: {

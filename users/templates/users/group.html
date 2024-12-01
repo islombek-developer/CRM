@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-10">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <div class="d-flex align-items-center">
+          <h4 class="card-title">Guruh Tolovlari</h4>
+
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table id="add-row" class="display table table-striped table-hover">
+            <thead>
+              <tr>
+                <th>Nomi</th>
+                <th>O'qituvchi</th>
+                <th>To'lov</th>
+                <th>Kunlari</th>
+                <th style="width: 15%">Amallar</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for group in groups %}
+                <tr>
+                  <td><a href="{% url 'group_payment_report' group.id %}">{{ group.name  }} </a></td>
+                  <td>{{ group.teacher }}</td>
+                  <td>{{ group.monthly_payment }}</td>
+                  <td>{{ group.week_days }}</td>
+                  <td>
+                    <div class="form-button-action">
+                      <!-- Edit Button -->
+                      <button
+                        type="button"
+                        class="btn btn-link btn-primary btn-lg"
+                        data-bs-toggle="modal"
+                        data-bs-target="#editStudentModal"
+                        data-id="{{ group.id }}"
+                      >
+                        <i class="fa fa-edit"></i>
+                      </button>
+                
+                    
+                    </div>
+                  </td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="5">Hozircha Guruh yo'q</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
