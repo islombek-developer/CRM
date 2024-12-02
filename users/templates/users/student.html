@@ -11,7 +11,7 @@
           data-bs-toggle="modal"
           data-bs-target="#addRowModal"
         >
-          <i class="fa fa-plus"></i> Add Student
+        <i class="fas fa-pen-square"></i> Add Student
         </button>
       </div>
       <div class="card-body p-4">
@@ -22,6 +22,7 @@
               <tr>
                 <th>Ismi Familyasi</th>
                 <th>Telefon Raqami</th>
+                <th>Uydagilar Raqami</th>
                 <th style="width: 15%">Tahrirlash</th>
               </tr>
             </thead>
@@ -31,6 +32,7 @@
               <tr>
                 <td>{{ student.first_name }} {{ student.last_name }}</td>
                 <td>{{ student.phone }}</td>
+                <td>{{ student.phone2 }}</td>
                 <td class="d-flex justify-content-center">
                   <!-- Edit Button -->
                   <button
@@ -123,12 +125,19 @@
                         <input type="text" class="form-control" name="last_name" required placeholder="Familiyani kiriting">
                     </div>
                 </div>
+
                 <div class="col-sm-12">
                     <div class="form-group form-group-default">
                         <label>Telefon</label>
                         <input type="tel" class="form-control" name="phone" required value="+998">
                     </div>
                 </div>
+                <div class="col-sm-12">
+                  <div class="form-group form-group-default">
+                      <label>Uydagilar</label>
+                      <input type="tel" class="form-control" name="phone" required value="+998">
+                  </div>
+              </div>
             </div>
         </div>
         <div class="modal-footer no-bd">

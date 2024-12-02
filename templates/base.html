@@ -10,7 +10,7 @@
     />
     <link
       rel="icon"
-      href="{% static 'assets/img/kaiadmin/favicon.ico' %}"
+      href="{% static 'assets/img/unco.ico' %}"
       type="image/x-icon"
     />
     <link rel="stylesheet" href="{% static 'assets/css/register.css' %}">
@@ -49,12 +49,12 @@
         <div class="sidebar-logo">
           <!-- Logo Header -->
           <div class="logo-header" data-background-color="dark">
-            <a href="index.html" class="logo">
+            <a href="#" class="logo">
               <img
-                src="{% static 'assets/img/kaiadmin/logo_light.svg' %}"
+                src="{% static 'assets/img/unco.png' %}"  
                 alt="navbar brand"
                 class="navbar-brand"
-                height="20"
+                height="150"
               />
             </a>
             <div class="nav-toggle">
@@ -85,48 +85,49 @@
                 <span class="sidebar-mini-icon">
                   <i class="fa fa-ellipsis-h"></i>
                 </span>
-                <h4 class="text-section">Components</h4>
+                <h4 class="text-section">Bo'limlar</h4>
               </li>
               <li class="nav-item">
 
-                  <a href=" {% url 'group_payment'  %}"><i class="fas fa-layer-group"></i>Guruhlar</a>
+                  <a href=" {% url 'group_payment'  %}"><i class="fas fa-users"></i>Guruhlar</a>
             
               
               </li>
 
-              <li class="nav-item">
-                  
-                  <a href="{% url 'teacher' %}"><i class="fas fa-pen-square"></i> O'qtuvchilar</a>
-                 
-        
-              </li>
+
               <li class="nav-item">
                  
-                  <a href="{% url 'attendance_group' %}"> <i class="fas fa-table"></i> Davomat</a>
+                  <a href="{% url 'attendance_group' %}"><i class="fas fa-calendar-check"></i>  Davomat</a>
            
               </li>
-              <li class="nav-item">
-                  
-                  <a href=""><i class="fas fa-map-marker-alt"></i> Profil</a>
-        
-              </li>
+            
               <li class="nav-item">
                   
                   <a href="{% url 'group_payments' %}"><i class="fa fa-credit-card"></i>  To'lovLar</a>
                
               </li>
-              <li class="nav-item">
-       
-                <a href="{% url 'register' %}"><i class="fas fa-th-list"></i> Registratsiya</a>
-           
-            
+
+            <li class="nav-item">
+                  
+              <a href="{% url 'teacher' %}"><i class="fas fa-user"></i> O'qtuvchilar</a>
+             
+    
+          </li>
+            <li class="nav-item">
+              <a href=""><i class="fas fa-user-circle"></i> Profil</a>
             </li>
+            <li class="nav-item">
+       
+              <a href="{% url 'register' %}"><i class="fas fa-pen-square"></i> Registratsiya</a>
+         
+          
+          </li>
              
             
               <li class="nav-item">
                 <a data-bs-toggle="collapse" href="#submenu">
                   <i class="fas fa-bars"></i>
-                  <p>Menu Levels</p>
+                  <p>Ma'lumotlar</p>
                   <span class="caret"></span>
                 </a>
                 <div class="collapse" id="submenu">
@@ -324,18 +325,17 @@
                   </a>
                   <div class="dropdown-menu quick-actions animated fadeIn">
                     <div class="quick-actions-header">
-                      <span class="title mb-1">Quick Actions</span>
-                      <span class="subtitle op-7">Shortcuts</span>
+                      <span class="title mb-1">Tezkor Tugmalar</span>
                     </div>
                     <div class="quick-actions-scroll scrollbar-outer">
                       <div class="quick-actions-items">
                         <div class="row m-0">
-                          <a class="col-6 col-md-4 p-0" href="#">
+                          <a class="col-6 col-md-4 p-0" href="{% url 'attendance_group' %}">
                             <div class="quick-actions-item">
                               <div class="avatar-item bg-danger rounded-circle">
                                 <i class="far fa-calendar-alt"></i>
                               </div>
-                              <span class="text">Kalendar</span>
+                              <span class="text">Davomat</span>
                             </div>
                           </a>
                           <a class="col-6 col-md-4 p-0" href="{% url 'group_payment' %}">
@@ -343,17 +343,27 @@
                               <div
                                 class="avatar-item bg-warning rounded-circle"
                               >
-                                <i class="fas fa-map"></i>
+                              <i class="fas fa-users"></i>
                               </div>
                               <span class="text">Guruhlar</span>
                             </div>
                           </a>
-                          <a class="col-6 col-md-4 p-0" href="#">
+                          <a class="col-6 col-md-4 p-0" href="{% url 'group_payments' %}">
+                            <div class="quick-actions-item">
+                              <div
+                                class="avatar-item bg-secondary rounded-circle"
+                              >
+                                <i class="fas fa-credit-card"></i>
+                              </div>
+                              <span class="text">To'lovlar</span>
+                            </div>
+                          </a>
+                          <a class="col-6 col-md-4 p-0" href="{% url 'teacher' %}">
                             <div class="quick-actions-item">
                               <div class="avatar-item bg-info rounded-circle">
-                                <i class="fas fa-file-excel"></i>
+                                <i class="fas fa-user"></i> 
                               </div>
-                              <span class="text">Davomat</span>
+                              <span class="text">Ustozlar</span>
                             </div>
                           </a>
                           <a class="col-6 col-md-4 p-0" href="#">
@@ -376,16 +386,7 @@
                               <span class="text">Invoice</span>
                             </div>
                           </a>
-                          <a class="col-6 col-md-4 p-0" href="{% url 'group_payments' %}">
-                            <div class="quick-actions-item">
-                              <div
-                                class="avatar-item bg-secondary rounded-circle"
-                              >
-                                <i class="fas fa-credit-card"></i>
-                              </div>
-                              <span class="text">To'lovlar</span>
-                            </div>
-                          </a>
+
                         </div>
                       </div>
                     </div>

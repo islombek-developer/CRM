@@ -17,7 +17,7 @@ class StudentForm(forms.ModelForm):
 
     class Meta:
         model = Student
-        fields = ['first_name', 'last_name', 'phone']
+        fields = ['first_name', 'last_name', 'phone','phone2']
 
     def save(self, commit=True):
         instance = super().save(commit=False)
