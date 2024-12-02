@@ -4,7 +4,10 @@ from .views import LoginView,RegisterView,GroupPaymentListView,Home,LogautView,G
 from .student import StudentCreateView,StudentListView,StudentUpdateView,StudentDeleteView
 from . import views
 from .davomat import attendance_page,GroupAttendListView,save_attendance,attendance_list
+from django.conf.urls import handler404
+from .views import custom_404_view
 
+handler404 = custom_404_view
 
 
 urlpatterns = [

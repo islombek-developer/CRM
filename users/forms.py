@@ -36,7 +36,7 @@ class StudentForm(forms.ModelForm):
 class StudentFormUpdate(forms.ModelForm):
     class Meta:
         model = Student
-        fields = ['first_name', 'last_name', 'phone', 'group']
+        fields = ['first_name', 'last_name', 'phone','phone', 'group']
         widgets = {
             'group': forms.Select(attrs={'class': 'form-control', 'id': 'edit-group'}),
         }

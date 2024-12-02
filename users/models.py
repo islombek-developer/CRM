@@ -42,7 +42,7 @@ class Group(models.Model):
         choices=WeekDayChoices.choices,
         default=WeekDayChoices.MON_WED_FRI
     )
-    monthly_payment = models.IntegerField(default=200000)
+    monthly_payment = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     

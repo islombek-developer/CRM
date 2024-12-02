@@ -15,8 +15,10 @@ from datetime import timezone,datetime, timedelta
 from django.urls import reverse_lazy
 from django.contrib.sessions.models import Session
 from django.utils import timezone
+from django.conf.urls import handler404
 
-
+def custom_404_view(request, exception):
+    return render(request, '404.html', status=404)
 
 
 class GroupCreateView(LoginRequiredMixin, CreateView):
@@ -185,8 +187,7 @@ class Home(View, LoginRequiredMixin):
         
         start_of_week = today - timedelta(days=today.weekday())  
         
-        end_of_week = start_of_week + timedelta(days=6) 
-        end_date_str = end_of_week.strftime('%B %d, %Y')  
+        end_date_str = start_of_week.strftime('%B %d, %Y')  
         context = {
             'student_count': student_count,
             'group_count': group_count,

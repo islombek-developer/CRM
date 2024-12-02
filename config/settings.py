@@ -24,9 +24,11 @@ LOGIN_REDIRECT_URL = 'home'
 SECRET_KEY = 'django-insecure-_ps1h$m^!64hhczr)$1pfet1oqwmumla+dtc5_+gwo3638_i9m'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+# ALLOWED_HOSTS = ['*']
+DEBUG = False
+ALLOWED_HOSTS = ['*']  
 
 
 # Application definition
@@ -73,10 +75,10 @@ Loging ={
     },
 }
 
-SESSION_COOKIE_AGE = 3600
+SESSION_COOKIE_AGE = 1800
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False 
-SESSION_EXPIRE_SECONDS = 3600 
+SESSION_EXPIRE_SECONDS = 1800 
 SESSION_TIMEOUT_REDIRECT = '/'
 
 ROOT_URLCONF = 'config.urls'
@@ -153,6 +155,8 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS=[
     BASE_DIR / 'static',
 ]
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
