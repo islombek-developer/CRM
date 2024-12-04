@@ -2,15 +2,39 @@ from django import forms
 from .models import Student,User,Teacher,Group,DailyPayment,Attendance,WeekDayChoices
 
 class GroupForm(forms.ModelForm):
+    name = forms.CharField(
+        label='Guruh nomi', 
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    
+    teacher = forms.ModelChoiceField(
+        label="O'qituvchi", 
+        queryset=Teacher.objects.select_related('user').all(), 
+        empty_label="O'qituvchini tanlang",
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        to_field_name='id'
+    )
+    
+    week_days = forms.ChoiceField(
+        label='Kunlari', 
+        choices=WeekDayChoices.choices,
+        initial=WeekDayChoices.MON_WED_FRI,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    
+    monthly_payment = forms.IntegerField(
+        label='Oylik tolov', 
+        widget=forms.NumberInput(attrs={'class': 'form-control'})
+    )
+
     class Meta:
         model = Group
-        fields = ['name', 'teacher', 'week_days', 'monthly_payment']  
+        fields = ['name', 'teacher', 'week_days', 'monthly_payment']
 
-        def __init__(self, *args, **kwargs):
-            teachers = kwargs.pop('teachers', None)
-            super().__init__(*args, **kwargs)
-            if teachers:
-                self.fields['teachers'].queryset = teachers
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Customize the label for each teacher to show full name
+        self.fields['teacher'].label_from_instance = lambda obj: obj.get_full_name()
 
 class StudentForm(forms.ModelForm):
     group_id = forms.IntegerField(widget=forms.HiddenInput(), required=False)

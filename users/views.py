@@ -1,4 +1,4 @@
-from .models import Student,User,Teacher,Group,Month,DailyPayment,Attendance
+from .models import Student,User,Teacher,Group,Month,DailyPayment,Attendance,WeekDayChoices
 from django.contrib.auth import authenticate, login,logout
 from django.shortcuts import render, redirect,get_object_or_404
 from django.views import View
@@ -21,26 +21,29 @@ def custom_404_view(request, exception):
     return render(request, '404.html', status=404)
 
 
+
 class GroupCreateView(LoginRequiredMixin, CreateView):
     model = Group
     form_class = GroupForm
     template_name = 'users/group_list.html'
     success_url = reverse_lazy('group_payment')
 
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs['teachers'] = Teacher.objects.all()  
-        return kwargs
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Fetch teachers with their full names
+        context['teachers'] = Teacher.objects.select_related('user').all()
+        context['form'] = self.get_form()
+        return context
 
     def form_valid(self, form):
         messages.success(self.request, "Guruh muvaffaqiyatli yaratildi!")
         return super().form_valid(form)
-
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['teachers'] = Teacher.objects.all()  
+        context['teachers'] = Teacher.objects.select_related('user').all()
         return context
-    
+
 class GroupDeleteView(LoginRequiredMixin, DeleteView):
     model = Group 
     success_url = reverse_lazy('group_payment')  

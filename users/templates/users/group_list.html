@@ -109,12 +109,14 @@
                 <select class="form-control" id="{{ form.teacher.id_for_label }}" name="{{ form.teacher.name }}">
                   <option value="">O'qituvchini tanlang</option>
                   {% for teacher in teachers %}
-                    <option value="{{ teacher.id }}" {% if form.teacher.value == teacher.id %}selected{% endif %}>{{ teacher.name }}</option>
+                    <option value="{{ teacher.id }}" {% if form.teacher.value == teacher.id %}selected{% endif %}>
+                      {{ teacher.get_full_name }}
+                    </option>
                   {% endfor %}
                 </select>
               </div>
             </div>
-
+            
             <!-- Week Days Field -->
             <div class="col-sm-12 mb-3">
               <div class="form-group">

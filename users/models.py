@@ -23,8 +23,12 @@ class Teacher(models.Model):
     user = models.OneToOneField(User,on_delete=models.CASCADE)
     date_of = models.DateField(null=True,blank=True )
 
+    
+    def get_full_name(self):
+        return f"{self.user.first_name} {self.user.last_name}"
+
     def __str__(self):
-        return self.user.username
+        return self.get_full_name()
 
 
 
@@ -36,7 +40,7 @@ class WeekDayChoices(models.TextChoices):
 
 class Group(models.Model):
     name = models.CharField(max_length=100)
-    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
+    teacher = models.ForeignKey(Teacher, on_delete=models.SET_NULL,null=True)
     week_days = models.CharField(
         max_length=20,
         choices=WeekDayChoices.choices,
@@ -148,13 +152,13 @@ from datetime import date, timedelta
 class Attendance(models.Model):
     group = models.ForeignKey(
         Group, 
-        on_delete=models.CASCADE, 
-        related_name='attendances'
+        on_delete=models.SET_NULL, 
+        related_name='attendances',null=True
     )
     student = models.ForeignKey(
         Student, 
-        on_delete=models.CASCADE, 
-        related_name='attendances'
+        on_delete=models.SET_NULL, 
+        related_name='attendances',null=True
     )
     date = models.DateField(default=timezone.localdate)
     status = models.BooleanField(default=True)
@@ -232,8 +236,8 @@ class Attendance(models.Model):
 
 
 class DailyPayment(models.Model):
-    group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='daily_payments')
-    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='daily_payments')
+    group = models.ForeignKey(Group, on_delete=models.SET_NULL, related_name='daily_payments',null=True)
+    student = models.ForeignKey(Student, on_delete=models.SET_NULL, related_name='daily_payments',null=True)
     payment_date = models.DateField(default=date.today)
     monthly_fee = models.IntegerField(default=200000)
     remaining_amount = models.IntegerField()
