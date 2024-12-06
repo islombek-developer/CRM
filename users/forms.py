@@ -1,6 +1,16 @@
 from django import forms
 from .models import Student,User,Teacher,Group,DailyPayment,Attendance,WeekDayChoices
 
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['first_name','last_name','image', 'phone_number', 'address', 'jobs']
+        widgets = {
+            'phone_number': forms.TextInput(),
+            'address': forms.TextInput(),
+            'jobs': forms.TextInput(),
+        }
+
 class GroupForm(forms.ModelForm):
     name = forms.CharField(
         label='Guruh nomi', 
@@ -60,10 +70,15 @@ class StudentForm(forms.ModelForm):
 class StudentFormUpdate(forms.ModelForm):
     class Meta:
         model = Student
-        fields = ['first_name', 'last_name', 'phone','phone', 'group']
+        fields = ['first_name', 'last_name', 'phone', 'phone2', 'group']
         widgets = {
-            'group': forms.Select(attrs={'class': 'form-control', 'id': 'edit-group'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),  # Corrected to TextInput
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),   # Corrected to TextInput
+            'phone': forms.TextInput(attrs={'class': 'form-control'}),       # Corrected to TextInput
+            'phone2': forms.TextInput(attrs={'class': 'form-control'}),      # Corrected to TextInput
+            'group': forms.Select(attrs={'class': 'form-control', 'id': 'edit-group'}),  # Keep as Select if group is a ForeignKey
         }
+
 
     def clean_phone(self):
         phone = self.cleaned_data.get('phone')
@@ -137,3 +152,17 @@ class RegisterForm(forms.ModelForm):
                 teacher = Teacher.objects.create(user=user)
                 teacher.save()
         return user
+
+class ResetPasswordForm(forms.Form):
+    old_password = forms.CharField(widget=forms.PasswordInput({"class": "form-control", "placeholder": "Old Password"}))
+    new_password = forms.CharField(widget=forms.PasswordInput({"class": "form-control", "placeholder": "New Password"}))
+    confirrm_password = forms.CharField(widget=forms.PasswordInput({"class": "form-control", "placeholder": "Confirm Password"}))
+
+    def clean_confirm_password(self):
+        new_password = self.cleaned_data['new_password']
+        new_password = self.cleaned_data['confirm_password']
+
+        if new_password !=confirm__password:
+            raise forms.ValidationError("passwords dont mach")
+        
+        return confirm_password

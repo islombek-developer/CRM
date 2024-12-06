@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid profile-update-container">
+    <div class="row justify-content-center align-items-center min-vh-100">
+        <div class="col-md-6 col-lg-5">
+            <div class="card profile-card shadow-lg border-0">
+                <div class="card-header text-center py-4 position-relative">
+                    <div class="profile-avatar-container mb-n4">
+                        <img src="/api/placeholder/150/150" class="rounded-circle border border-4 border-white shadow" alt="Profile Avatar">
+                    </div>
+                </div>
+
+                <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    <div class="card-body pt-5 px-4 pb-4">
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            {{ form.non_field_errors }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        {% endif %}
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    {{ form.first_name }}
+                                    <label for="{{ form.first_name.id_for_label }}">
+                                        <i class="fas fa-user me-2"></i>First Name
+                                    </label>
+                                    {% if form.first_name.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.first_name.errors }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    {{ form.last_name }}
+                                    <label for="{{ form.last_name.id_for_label }}">
+                                        <i class="fas fa-user me-2"></i>Last Name
+                                    </label>
+                                    {% if form.last_name.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.last_name.errors }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        {% for field in form %}
+                            {% if field.name not in 'first_name last_name email' %}
+                            <div class="form-floating mb-3">
+                                {{ field }}
+                                <label for="{{ field.id_for_label }}">
+                                    <i class="fas fa-{{ field.label|lower|slugify }} me-2"></i>
+                                    {{ field.label }}
+                                </label>
+                                {% if field.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ field.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+
+                    <div class="card-footer text-center py-3 bg-light">
+                        <button type="submit" class="btn btn-primary btn-lg px-4 shadow-sm">
+                            <i class="fas fa-save me-2"></i>Update Profile
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+      
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        background-color: #f0f2f5;
+    }
+    .profile-update-container {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .profile-card {
+        border-radius: 15px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    .profile-card:hover {
+        transform: scale(1.02);
+        box-shadow: 0 15px 35px rgba(50,50,93,.1), 0 5px 15px rgba(0,0,0,.07);
+    }
+    .profile-avatar-container {
+        display: flex;
+        justify-content: center;
+        position: relative;
+        z-index: 1;
+    }
+    .profile-avatar-container img {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+    .profile-avatar-container img:hover {
+        transform: scale(1.1) rotate(5deg);
+    }
+    .form-floating > input {
+        height: calc(3.5rem + 2px);
+    }
+    .btn-primary {
+        background: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
+        border: none;
+        transition: all 0.3s ease;
+    }
+    .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 6px rgba(50,50,93,.11), 0 1px 3px rgba(0,0,0,.08);
+    }
+    .card-header {
+        background: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
+        color: white;
+    }
+    .form-floating i {
+        margin-right: 10px;
+        opacity: 0.6;
+    }
+</style>
+
+<script>
+    // Bootstrap form validation
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+            var forms = document.getElementsByClassName('needs-validation');
+            Array.prototype.filter.call(forms, function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+</script>
+{% endblock %}

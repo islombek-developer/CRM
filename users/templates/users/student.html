@@ -35,19 +35,15 @@
                 <td>{{ student.phone2 }}</td>
                 <td class="d-flex justify-content-center">
                   <!-- Edit Button -->
-                  <button
+                  <a
+                  href="{% url 'update_student' student.id %}"
                   type="button"
                   class="btn btn-primary btn-sm"
-                  data-bs-toggle="modal"
-                  data-bs-target="#editStudentModal"
-                  data-id="{{ student.id }}"
-                  data-first-name="{{ student.first_name }}"
-                  data-last-name="{{ student.last_name }}"
-                  data-phone="{{ student.phone }}"
-                  data-phone="{{ student.phone2 }}"
-                  data-group="{{ student.group.id }}"  >
+              
+              >
+              
                   <i class="fa fa-edit"></i>
-                </button>
+                </a>
 
                   <!-- Delete Button -->
                   <button

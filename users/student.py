@@ -66,21 +66,22 @@ class StudentListView(LoginRequiredMixin, ListView):
             return Student.objects.filter(group_id=group_id)
         return Student.objects.all()
 
-
 class StudentUpdateView(LoginRequiredMixin, UpdateView):
     model = Student
     form_class = StudentFormUpdate
-    template_name = 'users/student.html'
+    template_name = 'users/student_update.html'
     success_url = reverse_lazy('group_payment')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['groups'] = Group.objects.all()  
         return context
-
+    
     def form_valid(self, form):
         messages.success(self.request, "Student ma'lumotlari yangilandi!")
+        print(self.get_success_url())  # Check if the URL is correct
         return super().form_valid(form)
+
 
 class StudentDeleteView(LoginRequiredMixin, DeleteView):
     model = Student

@@ -1,0 +1,169 @@
+/* Global Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f7fa;
+    color: #333;
+}
+
+.container {
+    margin-top: 50px;
+}
+
+/* Profile Card Styles */
+.user-profile {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    border: 1px solid #f0f0f0;
+}
+
+.widget-content-area {
+    padding: 20px;
+}
+
+.d-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+h3 {
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.edit-profile svg {
+    color: #007bff;
+    cursor: pointer;
+}
+
+.user-info {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.user-info img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px;
+}
+
+.user-info p {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.contacts-block__item {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    font-size: 1rem;
+    color: #666;
+}
+
+.contacts-block__item svg {
+    margin-right: 10px;
+    color: #007bff;
+}
+
+.contacts-block__item a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.contacts-block__item a:hover {
+    text-decoration: underline;
+}
+
+.list-inline-item a {
+    padding: 10px;
+    background-color: #f0f0f0;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.list-inline-item a:hover {
+    background-color: #007bff;
+}
+
+.list-inline-item a svg {
+    width: 20px;
+    height: 20px;
+    color: #fff;
+}
+
+/* Media Queries for Responsive Design */
+@media (max-width: 768px) {
+    .user-profile {
+        margin-top: 20px;
+    }
+
+    .user-info img {
+        width: 80px;
+        height: 80px;
+    }
+
+    .contacts-block__item {
+        font-size: 0.9rem;
+    }
+
+    .list-inline-item a {
+        padding: 8px;
+        margin-right: 5px;
+    }
+}
+
+@media (max-width: 576px) {
+    .user-profile {
+        padding: 15px;
+    }
+
+    .d-flex {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .user-info p {
+        font-size: 1rem;
+    }
+
+    .list-inline-item a {
+        padding: 6px;
+    }
+}
+.profile-avatar {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 20px;
+}
+
+.user-info p {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.user-info-list .contacts-block__item {
+    font-size: 16px;
+}
+
+.user-info-list ul.contacts-block {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.list-inline {
+    padding-left: 0;
+}
+
+.list-inline-item {
+    margin-right: 10px;
+}

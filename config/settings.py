@@ -28,7 +28,6 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']  
 
 
-# Application definition
 
 INSTALLED_APPS = [
     'jazzmin',
@@ -71,6 +70,7 @@ Loging ={
         },
     },
 }
+
 
 SESSION_COOKIE_AGE = 1800
 

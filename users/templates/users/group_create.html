@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-10">
+    <!-- Title -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-primary">Guruh yaratish</h1>
+        <a href="{% url 'group_payment' %}" class="btn btn-outline-primary btn-sm">
+            <i class="fa fa-arrow-left me-2"></i>Ortga
+        </a>
+    </div>
+
+    <!-- Success Messages -->
+    {% if messages %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {% for message in messages %}
+                <span>{{ message }}</span>
+            {% endfor %}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endif %}
+
+    <!-- Form -->
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Yangi Guruh Qo'shish</h5>
+        </div>
+        <div class="card-body">
+            <form method="post" novalidate>
+                {% csrf_token %}
+                <div class="row">
+                    {{ form.non_field_errors }}
+                    {% for field in form %}
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.errors %}
+                                <div class="text-danger small">
+                                    {{ field.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+                <button type="submit" class="btn btn-success">
+                    <i class="fa fa-save me-2"></i>Yaratish
+                </button>
+            </form>
+        </div>
+    </div>
+
+   
+</div>
+{% endblock %}

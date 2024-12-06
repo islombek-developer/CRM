@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.urls import path
-from .views import LoginView,RegisterView,GroupPaymentListView,Home,LogautView,GroupCreateView,TeacherView,GroupDeleteView,GroupPaymentsListView
+from .views import (LoginView, RegisterView, GroupPaymentListView, Home, LogautView, GroupCreateView, TeacherView, 
+    GroupDeleteView, GroupPaymentsListView, UserProfileView, UserProfileUpdateView,ResetPasswordView)
 from .student import StudentCreateView,StudentListView,StudentUpdateView,StudentDeleteView
 from . import views
 from .davomat import attendance_page,GroupAttendListView,save_attendance,attendance_list
@@ -14,7 +15,6 @@ urlpatterns = [
     path('add_payment/<int:student_id>/', views.add_payment, name='add_payment'),
     path('student_payment_history/<int:student_id>/', views.student_payment_history, name='student_payment_history'),
     path('group_payment_report/<int:group_id>/', views.group_payment_report, name='group_payment_report'),
-
     path('',LoginView.as_view(),name='login'),
     path('logout/',LogautView.as_view(),name='logout'),
     path('register/',RegisterView.as_view(),name='register'),
@@ -30,13 +30,12 @@ urlpatterns = [
     path('teacher/', TeacherView.as_view(), name='teacher'),
     path('groups/<int:pk>/delete/', GroupDeleteView.as_view(), name='delete_group'),
     path('groups/create/', GroupCreateView.as_view(), name='create_group'),
+    path('profile/', UserProfileView.as_view(), name='profile'),
+    path('profile/edit/', UserProfileUpdateView.as_view(), name='profile_edit'),
 
-       
     path('group/<int:group_id>/attendance-list/', attendance_list, name='attendance_list'),
-
     path('group/<int:group_id>/save-attendance/', save_attendance, name='save_attendance'),
     path('group/<int:group_id>/attendance/', attendance_page, name='attendance_page'),
-
     path('attendance-groups/',GroupAttendListView.as_view(),name='attendance_group'),
-
+    path('resed-password', ResetPasswordView.as_view(), name='resed_password'),
 ]

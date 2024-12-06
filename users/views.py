@@ -4,8 +4,8 @@ from django.shortcuts import render, redirect,get_object_or_404
 from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Sum
-from django.views.generic import UpdateView,CreateView,DeleteView
-from .forms import LoginForm, RegisterForm,GroupForm
+from django.views.generic import UpdateView,CreateView,DeleteView,DetailView
+from .forms import LoginForm, RegisterForm,GroupForm,UserProfileForm,ResetPasswordForm
 from .permissionmixin import AdminRequiredMixin,TeacherRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView
@@ -25,7 +25,7 @@ def custom_404_view(request, exception):
 class GroupCreateView(LoginRequiredMixin, CreateView):
     model = Group
     form_class = GroupForm
-    template_name = 'users/group_list.html'
+    template_name = 'users/group_create.html'
     success_url = reverse_lazy('group_payment')
 
     def get_context_data(self, **kwargs):
@@ -274,3 +274,46 @@ class TeacherView(LoginRequiredMixin,View):
         teacher=Teacher.objects.all()
         return render(request,'users/teacher.html',{'teacher':teacher})
     
+
+class UserProfileView(LoginRequiredMixin, DetailView):
+    model = User
+    template_name = 'users/user_profile.html'
+
+    def get_object(self):
+        return self.request.user  # Display the logged-in user's profile
+
+
+# Profile Update View
+
+class UserProfileUpdateView(LoginRequiredMixin, UpdateView):
+    model = User
+    form_class = UserProfileForm
+    template_name = 'users/user_profile_edit.html'
+    success_url = reverse_lazy('profile')
+
+    def get_object(self):
+        return self.request.user
+
+    def form_valid(self, form):
+        # Add any additional logic before saving
+        response = super().form_valid(form)
+        # Optional: Add a success message
+      
+        messages.success(self.request, 'Profile updated successfully!')
+        return response
+    
+class ResetPasswordView(LoginRequiredMixin,View):
+    def get(self, request):
+        form = ResetPasswordForm()
+        return render(request, 'users/reset_password.html', {'form':form})
+
+    def post(self, request):
+        form = ResetPasswordForm(request.POST)
+        if form.is_valid():
+            new_password = form.cleaned_data['new_password']
+            user = request.user
+            user.set_password(new_password)
+            user.save()
+            return redirect('/')
+        form = ResetPasswordForm()
+        return render(request, 'users/reset_password.html', {'form':form})

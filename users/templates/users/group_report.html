@@ -22,39 +22,42 @@
                 </div>
             </div>
 
-            <table class="table table-bordered table-hover align-middle">
-                <thead class="table-dark text-center">
-                    <tr>
-                        <th>O'quvchi</th>
-                        <th>To'langan summa</th>
-                        <th>Qolgan balans</th>
-                        <th>Amallar</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in student_payments %}
-                    <tr>
-                        <td class="text-center">{{ item.student.full_name }}</td>
-                        <td class="text-center">{{ item.total_paid|intcomma }} so'm</td>
-                        <td class="text-center">{{ item.remaining|intcomma }} so'm</td>
-                        <td class="text-center">
-                            <a href="{% url 'student_payment_history' item.student.id %}" 
-                               class="btn btn-sm btn-info me-1">
-                                To'lov tarixi
-                            </a>
-                            <a href="{% url 'add_payment' item.student.id %}" 
-                               class="btn btn-sm btn-primary">
-                                To'lov qo'shish
-                            </a>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="4" class="text-center text-muted">Guruhda o'quvchilar yo'q</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle">
+                    <thead class="table-dark text-center">
+                        <tr>
+                            <th>O'quvchi</th>
+                            <th>To'langan summa</th>
+                            <th>Qolgan balans</th>
+                            <th>Amallar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in student_payments %}
+                        <tr>
+                            <td class="text-center">{{ item.student.full_name }}</td>
+                            <td class="text-center">{{ item.total_paid|intcomma }} so'm</td>
+                            <td class="text-center">{{ item.remaining|intcomma }} so'm</td>
+                            <td class="text-center">
+                                <a href="{% url 'student_payment_history' item.student.id %}"
+                                   class="btn btn-sm btn-info me-1">
+                                    To'lov tarixi
+                                </a>
+                                <a href="{% url 'add_payment' item.student.id %}"
+                                   class="btn btn-sm btn-primary">
+                                    To'lov qo'shish
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted">Guruhda o'quvchilar yo'q</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
         </div>
     </div>
 </div>
