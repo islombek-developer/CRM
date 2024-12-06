@@ -51,15 +51,15 @@
                   <td>
                     <div class="d-flex justify-content-center gap-2">
                       <!-- Tahrirlash -->
-                      <button 
+                      <a 
+                      href="{% url 'group_update' group.id %}"
                         type="button" 
                         class="btn btn-sm btn-warning"
-                        data-bs-toggle="modal" 
-                        data-bs-target="#editGroupModal" 
+                        
                         data-id="{{ group.id }}"
                       >
                         <i class="fa fa-edit"></i>
-                      </button>
+                    </a>
 
                       <!-- O'chirish -->
                       <button 

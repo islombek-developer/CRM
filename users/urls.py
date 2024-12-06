@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path
 from .views import (LoginView, RegisterView, GroupPaymentListView, Home, LogautView, GroupCreateView, TeacherView, 
-    GroupDeleteView, GroupPaymentsListView, UserProfileView, UserProfileUpdateView,ResetPasswordView)
+    GroupDeleteView, GroupPaymentsListView, UserProfileView, UserProfileUpdateView,ResetPasswordView,GroupUpdateView)
 from .student import StudentCreateView,StudentListView,StudentUpdateView,StudentDeleteView
 from . import views
 from .davomat import attendance_page,GroupAttendListView,save_attendance,attendance_list
@@ -32,7 +32,7 @@ urlpatterns = [
     path('groups/create/', GroupCreateView.as_view(), name='create_group'),
     path('profile/', UserProfileView.as_view(), name='profile'),
     path('profile/edit/', UserProfileUpdateView.as_view(), name='profile_edit'),
-
+    path('groups/update/<int:pk>/', GroupUpdateView.as_view(), name='group_update'),
     path('group/<int:group_id>/attendance-list/', attendance_list, name='attendance_list'),
     path('group/<int:group_id>/save-attendance/', save_attendance, name='save_attendance'),
     path('group/<int:group_id>/attendance/', attendance_page, name='attendance_page'),

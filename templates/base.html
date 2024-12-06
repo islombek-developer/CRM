@@ -188,9 +188,9 @@
           <div class="main-header-logo">
             <!-- Logo Header -->
             <div class="logo-header" data-background-color="dark">
-              <a href="index.html" class="logo">
+              <a href="#" class="logo">
                 <img
-                  src="{% static 'assets/img/kaiadmin/logo_light.svg' %}"
+                  src="{% static 'assets/img/unco.png' %}"
                   alt="navbar brand"
                   class="navbar-brand"
                   height="20"
@@ -402,12 +402,14 @@
                     href="#"
                     aria-expanded="false"
                   >
+         
                     <div class="avatar-sm">
-                      <img
-                        src="{{user.image.url}}"
-                        alt="..."
-                        class="avatar-img rounded-circle"
-                      />
+                      {% if user.image %}
+                      <img src="{{ user.image.url }}" alt="User Image" class="avatar-img rounded-circle">
+                      {% else %}
+                          <img src="/path/to/default/image.jpg" alt="Default Image" class="avatar-img rounded-circle">
+                      {% endif %}
+    
                     </div>
                     <span class="profile-username">
                       <span class="fw-bold">{{user.first_name}}</span>
@@ -418,16 +420,17 @@
                       <li>
                         <div class="user-box">
                           <div class="avatar-lg">
-                            <img
-                              src="{{user.image.url}}"
-                              alt="image profile"
-                              class="avatar-img rounded"
-                            />
+                            {% if user.image %}
+                            <img src="{{ user.image.url }}" alt="User Image" class="avatar-img rounded-circle">
+                            {% else %}
+                                <img src="/path/to/default/image.jpg" alt="Default Image" class="avatar-img rounded-circle">
+                            {% endif %}
+          
                           </div>
                           <div class="u-text">
                             <h4>{{user.first_name}}</h4>
                             <a
-                              href="profile.html"
+                              href="{% url 'profile' %}"
                               class="btn btn-xs btn-secondary btn-sm"
                               >Profile</a
                             >

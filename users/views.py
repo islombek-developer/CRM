@@ -53,6 +53,14 @@ class GroupDeleteView(LoginRequiredMixin, DeleteView):
         messages.success(self.request, f"Guruh '{group.name}' muvaffaqiyatli o'chirildi!")
         return super().delete(request, *args, **kwargs)
 
+class GroupUpdateView(LoginRequiredMixin, UpdateView):
+    model = Group
+    form_class = GroupForm
+    template_name = 'users/group_create.html'
+    success_url = reverse_lazy('group_payment')
+
+    def form_valid(self, form):
+        return super().form_valid(form)
 
 
 

@@ -36,6 +36,7 @@ class Teacher(models.Model):
 class WeekDayChoices(models.TextChoices):
     MON_WED_FRI = 'toq_kunlari', 'Dushanba/Chorshanba/Juma'
     TUE_THU_SAT = 'juft_kunlari', 'Seshanba/Payshanba/Shanba'
+    INDUVIDUAL = 'INDUVIDUAL','INDUVIDUAL'
 
 
 class Group(models.Model):
