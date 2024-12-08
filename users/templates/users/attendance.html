@@ -1,67 +1,54 @@
 {% extends 'base.html' %}  
-{# Adjust base template as needed #}
 
 {% block content %}
-<div class="container">
-    <h2>Davomat - {{ group.name }} Guruhi ({{ today|date:"d.m.Y" }})</h2>
+<div class="container mt-10">
+    <h2 class="text-center mb-4">Davomat - {{ group.name }} Guruhi</h2>
+    <p class="text-center text-muted">{{ today|date:"d.m.Y" }}</p>
     
     <form method="post" action="{% url 'save_attendance' group_id=group.id %}">
         {% csrf_token %}
         
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>№</th>
-                    <th>O'quvchi nomi</th>
-                    <th>Davomat</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in attendance_data %}
-                <tr>
-                    <td>{{ forloop.counter }}</td>
-                    <td>{{ item.student.full_name }}</td>
-                    <td>
-                        <div class="form-check form-check-inline">
-                            <input 
-                                type="radio" 
-                                name="attendance_{{ item.student.id }}" 
-                                id="present_{{ item.student.id }}" 
-                                value="present" 
-                                class="form-check-input"
-                                {% if item.attendance.status %}checked{% endif %}
-                            >
-                            <label 
-                                class="form-check-label" 
-                                for="present_{{ item.student.id }}"
-                            >
-                                Keldi
-                            </label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input 
-                                type="radio" 
-                                name="attendance_{{ item.student.id }}" 
-                                id="absent_{{ item.student.id }}" 
-                                value="absent" 
-                                class="form-check-input"
-                                {% if not item.attendance.status %}checked{% endif %}
-                            >
-                            <label 
-                                class="form-check-label" 
-                                for="absent_{{ item.student.id }}"
-                            >
-                                Kelmadi
-                            </label>
-                        </div>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table class="table table-hover table-striped table-bordered">
+                <thead class="table-primary">
+                    <tr>
+                        <th class="text-center">№</th>
+                        <th>O'quvchi nomi</th>
+                        <th class="text-center">Davomat</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in attendance_data %}
+                    <tr>
+                        <td class="text-center">{{ forloop.counter }}</td>
+                        <td>{{ item.student.full_name }}</td>
+                        <td class="text-center">
+                            <div class="form-check d-inline-block">
+                                <input 
+                                    type="checkbox" 
+                                    name="attendance_{{ item.student.id }}" 
+                                    id="attendance_{{ item.student.id }}" 
+                                    value="present" 
+                                    class="form-check-input"
+                                    {% if item.attendance.status %}checked{% endif %}
+                                >
+                                <label 
+                                    class="form-check-label" 
+                                    for="attendance_{{ item.student.id }}"
+                                >
+                                </label>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
         
-        <div class="form-group">
-            <button type="submit" class="btn btn-primary">Davomatni Saqlash</button>
+        <div class="d-flex justify-content-start mt-4">
+            <button type="submit" class="btn btn-success btn-lg">
+                <i class="bi bi-save"></i> Davomatni Saqlash
+            </button>
         </div>
     </form>
 </div>

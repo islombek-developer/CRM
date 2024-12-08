@@ -142,48 +142,46 @@ def attendance_page(request, group_id):
     except Group.DoesNotExist:
         # Handle case where group doesn't exist
         return redirect('group_list')  # Adjust this to your actual route
-
+    
 @login_required
 def save_attendance(request, group_id):
     """
     Save attendance for a group
     """
     if request.method == 'POST':
-        # Get the group
-        group = Group.objects.get(id=group_id)
+        # Get the group or return 404 if not found
+        group = get_object_or_404(Group, id=group_id)
         
         # Get today's date
         today = timezone.localdate()
         
-        # Process each student's attendance
-        for key, value in request.POST.items():
-            if key.startswith('attendance_'):
-                student_id = key.split('_')[1]
-                try:
-                    student = Student.objects.get(id=student_id)
-                    
-                    # Find or create attendance record
-                    attendance, created = Attendance.objects.get_or_create(
-                        group=group,
-                        student=student,
-                        date=today,
-                        defaults={'status': value == 'present'}
-                    )
-                    
-                    # Update if not created
-                    if not created:
-                        attendance.status = (value == 'present')
-                        attendance.save()
-                
-                except (Student.DoesNotExist, ValueError):
-                    # Log error or handle appropriately
-                    continue
+        # Get all students in the group
+        students = Student.objects.filter(group=group)
         
-        # Redirect back to attendance page or show success message
+        # Process each student's attendance
+        for student in students:
+            # Check if checkbox for this student exists in POST data
+            is_present = f'attendance_{student.id}' in request.POST
+            
+            # Find or create attendance record
+            attendance, created = Attendance.objects.get_or_create(
+                group=group,
+                student=student,
+                date=today,
+                defaults={'status': is_present}
+            )
+            
+            # Update status if the record already exists
+            if not created:
+                attendance.status = is_present
+                attendance.save()
+        
+        # Redirect to the attendance list view after saving
         return redirect('attendance_list', group_id=group_id)
     
-    # If not a POST request, redirect
-    return redirect('attendance_group')  # Adjust to your actual route
+    # If not a POST request, redirect to the attendance group list
+    return redirect('attendance_group')
+
 
 class GroupAttendListView(LoginRequiredMixin, ListView):
     model = Group

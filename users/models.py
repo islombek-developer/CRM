@@ -111,7 +111,7 @@ class Student(models.Model):
             student=self
         ).order_by('-payment_date').first()
         
-        return latest_payment.remaining_amount if latest_payment else 200000
+        return latest_payment.remaining_amount if latest_payment else latest_payment
 
     def daily_payment_calculation(self):
 
@@ -258,43 +258,67 @@ class DailyPayment(models.Model):
         current_year = timezone.now().year
         last_payment = DailyPayment.objects.filter(student=self.student).order_by('-payment_date').first()
 
-        if not self.pk:  
+        if self.group and self.group.monthly_payment:
+            monthly_payment = self.group.monthly_payment
+        else:
+            monthly_payment = self.monthly_fee 
+
+        if not self.pk:  # New record
             if last_payment:
                 last_month = last_payment.payment_date.month
                 last_year = last_payment.payment_date.year
-                
-               
+
                 if last_month != current_month or last_year != current_year:
-                    self.remaining_amount = self.monthly_fee - self.paid_amount
+                    self.remaining_amount = monthly_payment - self.paid_amount
                 else:
                     self.remaining_amount = last_payment.remaining_amount - self.paid_amount
             else:
-                self.remaining_amount = self.monthly_fee - self.paid_amount
-        else:
+                self.remaining_amount = monthly_payment - self.paid_amount
+        else:  # Updating an existing record
             if self.payment_date.month != last_payment.payment_date.month:
-                self.remaining_amount = self.monthly_fee - self.paid_amount
+                self.remaining_amount = monthly_payment - self.paid_amount
             else:
                 self.remaining_amount = last_payment.remaining_amount - self.paid_amount
+
+        # Ensure remaining_amount does not go below 0
+        if self.remaining_amount < 0:
+            self.remaining_amount = 0
+
+        # If fully paid, set remaining_amount to 0
+        total_paid = DailyPayment.objects.filter(
+            student=self.student,
+            group=self.group
+        ).aggregate(total_paid=models.Sum('paid_amount'))['total_paid'] or 0
+
+        if total_paid >= monthly_payment:
+            self.remaining_amount = 0
 
         super().save(*args, **kwargs)
 
     @classmethod
     def get_student_balance(cls, student_id):
-        """O'quvchining joriy balansini qaytaradi"""
+        """Returns the current balance for the given student."""
         latest_payment = cls.objects.filter(
             student_id=student_id
         ).order_by('-payment_date').first()
 
+        student = Student.objects.get(id=student_id)
+        group_monthly_fee = student.group.monthly_payment if student.group else cls._meta.get_field('monthly_payment').default
+
         if not latest_payment:
-            return 200000  
+            return group_monthly_fee  # Use group's monthly fee
 
         return latest_payment.remaining_amount
 
+
     @classmethod
     def get_group_total_remaining(cls, group_id):
-        """Guruh bo'yicha umumiy qolgan summani qaytaradi"""
+        """Returns the total remaining amount for a group."""
+        group = Group.objects.get(id=group_id)
+        group_monthly_fee = group.monthly_payment
+
         latest_payments = cls.objects.filter(
-            group_id=group_id
+            group_id=group_id   
         ).values('student').annotate(
             latest_date=models.Max('payment_date')
         )
@@ -308,15 +332,14 @@ class DailyPayment(models.Model):
             if student_latest:
                 total_remaining += student_latest.remaining_amount
             else:
-                student = Student.objects.get(id=payment['student'])
-                total_remaining += 200000  
+                total_remaining += group_monthly_fee  # Use group's monthly fee for unpaid students
 
         students_in_group = Student.objects.filter(group_id=group_id)
         paid_students = [payment['student'] for payment in latest_payments]
         unpaid_students = students_in_group.exclude(id__in=paid_students)
 
         for student in unpaid_students:
-            total_remaining += 200000  
+            total_remaining += group_monthly_fee
 
         return total_remaining
 
